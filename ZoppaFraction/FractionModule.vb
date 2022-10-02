@@ -18,6 +18,10 @@ Public Module FractionModule
         Return Fraction.Create(value)
     End Function
 
+    Public Function CFra(value As Long) As Fraction
+        Return Fraction.Create(value)
+    End Function
+
     Public Function CFra(value As Double) As Fraction
         Return Fraction.Create(value)
     End Function

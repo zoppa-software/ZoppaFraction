@@ -4,13 +4,13 @@ Imports System.Text
 
 ''' <summary>可変長変数。</summary>
 Public Structure VariableInteger
-    Implements IComparable(Of VariableInteger), IEquatable(Of VariableInteger)
+    Implements IComparable(Of VariableInteger), IEquatable(Of VariableInteger), ICloneable
 
     ' 符号
     Private ReadOnly mIsPlusSign As Boolean
 
     ' 値配列
-    Private ReadOnly mValues As Byte()
+    Private ReadOnly mValue As Byte()
 
     ''' <summary>0値を取得します。</summary>
     ''' <returns>0値。</returns>
@@ -20,25 +20,44 @@ Public Structure VariableInteger
     ''' <returns>最上位のビット桁数。</returns>
     Public ReadOnly Property BitSize As Integer
         Get
-            Return GetBitSize(Me.mValues)
+            Return GetBitSize(Me.mValue)
         End Get
     End Property
 
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <returns></returns>
     Public ReadOnly Property IsZero As Boolean
         Get
-            Return (Me.mValues.Length = 1 AndAlso Me.mValues(0) = 0)
+            Return (Me.mValue.Length = 1 AndAlso Me.mValue(0) = 0)
         End Get
     End Property
 
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <returns></returns>
     Public ReadOnly Property IsPlusSign As Boolean
         Get
             Return Me.mIsPlusSign
         End Get
     End Property
 
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <returns></returns>
     Public ReadOnly Property IsMinusSign As Boolean
         Get
             Return Not Me.mIsPlusSign
+        End Get
+    End Property
+
+    Public ReadOnly Property ByteValues As Byte()
+        Get
+            Dim tmp As New TempValue(Me.mValue, Me.mValue.Length)
+            Return tmp.mValue
         End Get
     End Property
 
@@ -57,7 +76,7 @@ Public Structure VariableInteger
             vals.Add(CByte(int And &HFF))
             int >>= 8
         Loop
-        Me.mValues = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
+        Me.mValue = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
@@ -75,7 +94,7 @@ Public Structure VariableInteger
             vals.Add(CByte(int And &HFF))
             int >>= 8
         Loop
-        Me.mValues = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
+        Me.mValue = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
@@ -87,7 +106,7 @@ Public Structure VariableInteger
             value >>= 8
         Loop
         Me.mIsPlusSign = True
-        Me.mValues = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
+        Me.mValue = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
@@ -104,7 +123,7 @@ Public Structure VariableInteger
                 Exit For
             End If
         Next
-        Me.mValues = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
+        Me.mValue = If(vals.Count > 0, vals.ToArray(), New Byte() {0})
     End Sub
 
     ''' <summary>文字列表現を取得します。</summary>
@@ -112,11 +131,11 @@ Public Structure VariableInteger
     Public Overrides Function ToString() As String
         If Not Me.IsZero Then
             Dim ans As New List(Of Byte)()
-            Dim ptr = New VariableInteger(Me.mIsPlusSign, Me.mValues)
+            Dim ptr = New VariableInteger(Me.mIsPlusSign, Me.mValue)
             Dim den = New VariableInteger(10)
             Do
                 Dim pair = ptr.DivisionAndRemainder(den)
-                ans.Add(pair.Remainder.mValues(0))
+                ans.Add(pair.Remainder.mValue(0))
                 ptr = pair.Quotient
             Loop While Not ptr.IsZero
 
@@ -134,8 +153,12 @@ Public Structure VariableInteger
         End If
     End Function
 
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <returns></returns>
     Public Function Abs() As VariableInteger
-        Return New VariableInteger(True, Me.mValues)
+        Return New VariableInteger(True, Me.mValue)
     End Function
 
 #Region "加算"
@@ -160,12 +183,12 @@ Public Structure VariableInteger
     ''' <param name="other">加算する値。</param>
     ''' <returns>加算結果。</returns>
     Public Function Addition(other As VariableInteger) As VariableInteger
-        Dim tmp = New TempValue(Me.mValues, Math.Max(Me.mValues.Length, other.mValues.Length) + 1)
+        Dim tmp = New TempValue(Me.mValue, Math.Max(Me.mValue.Length, other.mValue.Length) + 1)
         If Me.mIsPlusSign Xor other.mIsPlusSign Then
-            Dim minus = Subtraction(tmp.mValue, other.mValues)
+            Dim minus = Subtraction(tmp.mValue, other.mValue)
             Return New VariableInteger(minus Xor Me.mIsPlusSign, tmp.mValue)
         Else
-            Addition(tmp.mValue, other.mValues)
+            Addition(tmp.mValue, other.mValue)
             Return New VariableInteger(Me.mIsPlusSign, tmp.mValue)
         End If
     End Function
@@ -186,7 +209,7 @@ Public Structure VariableInteger
     ''' <param name="self">反転する数値。</param>
     ''' <returns>反転結果。</returns>
     Public Shared Operator -(self As VariableInteger) As VariableInteger
-        Return New VariableInteger(Not self.mIsPlusSign, self.mValues)
+        Return New VariableInteger(Not self.mIsPlusSign, self.mValue)
     End Operator
 
     ''' <summary>引算を行います。</summary>
@@ -224,12 +247,12 @@ Public Structure VariableInteger
     ''' <param name="other">引算する値。</param>
     ''' <returns>引算結果。</returns>
     Public Function Subtraction(other As VariableInteger) As VariableInteger
-        Dim tmp = New TempValue(Me.mValues, Math.Max(Me.mValues.Length, other.mValues.Length) + 1)
+        Dim tmp = New TempValue(Me.mValue, Math.Max(Me.mValue.Length, other.mValue.Length) + 1)
         If Me.mIsPlusSign Xor other.mIsPlusSign Then
-            Addition(tmp.mValue, other.mValues)
+            Addition(tmp.mValue, other.mValue)
             Return New VariableInteger(Me.mIsPlusSign, tmp.mValue)
         Else
-            Dim minus = Subtraction(tmp.mValue, other.mValues)
+            Dim minus = Subtraction(tmp.mValue, other.mValue)
             Return New VariableInteger(minus Xor Me.mIsPlusSign, tmp.mValue)
         End If
     End Function
@@ -255,10 +278,10 @@ Public Structure VariableInteger
         Dim ls = If(Me.mIsPlusSign, 1, -1)
         Dim rs = If(multiplier.mIsPlusSign, 1, -1)
 
-        Dim ans = New TempValue(New Byte() {0}, Me.mValues.Length + multiplier.mValues.Length + 1)
+        Dim ans = New TempValue(New Byte() {0}, Me.mValue.Length + multiplier.mValue.Length + 1)
 
-        Dim num = New TempValue(Me.mValues, Me.mValues.Length + multiplier.mValues.Length + 1)
-        Dim multi = New TempValue(multiplier.mValues, multiplier.mValues.Length)
+        Dim num = New TempValue(Me.mValue, Me.mValue.Length + multiplier.mValue.Length + 1)
+        Dim multi = New TempValue(multiplier.mValue, multiplier.mValue.Length)
 
         Dim loopCnt = multiplier.BitSize
         For i As Integer = 0 To loopCnt
@@ -309,16 +332,16 @@ Public Structure VariableInteger
         Dim ls = If(Me.mIsPlusSign, 1, -1)
         Dim rs = If(divisor.mIsPlusSign, 1, -1)
 
-        Dim lbitsz = GetBitSize(Me.mValues)
-        Dim rbitsz = GetBitSize(divisor.mValues)
+        Dim lbitsz = GetBitSize(Me.mValue)
+        Dim rbitsz = GetBitSize(divisor.mValue)
 
         If lbitsz >= rbitsz Then
-            Dim num = New TempValue(Me.mValues, Me.mValues.Length)
+            Dim num = New TempValue(Me.mValue, Me.mValue.Length)
 
-            Dim div = New TempValue(divisor.mValues, Me.mValues.Length)
+            Dim div = New TempValue(divisor.mValue, Me.mValue.Length)
             LeftShift(div.mValue, lbitsz - rbitsz)
 
-            Dim quotient As New TempValue(Me.mValues.Length)
+            Dim quotient As New TempValue(Me.mValue.Length)
             For i As Integer = lbitsz - rbitsz To 0 Step -1
                 If num.CompareTo(div) >= 0 Then
                     SetBit(quotient.mValue, i)
@@ -411,6 +434,12 @@ Public Structure VariableInteger
         Return res
     End Function
 
+    Public Function RightShift() As VariableInteger
+        Dim tmp = New TempValue(Me.mValue, Me.mValue.Length)
+        RightShift(tmp.mValue)
+        Return New VariableInteger(Me.mIsPlusSign, tmp.mValue)
+    End Function
+
     ''' <summary>指定の桁位置にビットをセットする。</summary>
     ''' <param name="values">数値配列。</param>
     ''' <param name="figre">指定の桁。</param>
@@ -439,9 +468,9 @@ Public Structure VariableInteger
     ''' <param name="other">比較対象。</param>
     ''' <returns>比較結果。</returns>
     Public Overloads Function Equals(other As VariableInteger) As Boolean Implements IEquatable(Of VariableInteger).Equals
-        For i As Integer = Math.Max(Me.mValues.Length, other.mValues.Length) - 1 To 0 Step -1
-            Dim lv = If(i < Me.mValues.Length, Me.mValues(i), 0)
-            Dim rv = If(i < other.mValues.Length, other.mValues(i), 0)
+        For i As Integer = Math.Max(Me.mValue.Length, other.mValue.Length) - 1 To 0 Step -1
+            Dim lv = If(i < Me.mValue.Length, Me.mValue(i), 0)
+            Dim rv = If(i < other.mValue.Length, other.mValue(i), 0)
             If lv <> rv Then
                 Return False
             End If
@@ -470,9 +499,9 @@ Public Structure VariableInteger
     ''' <returns>比較結果。</returns>
     Public Function CompareTo(other As VariableInteger) As Integer Implements IComparable(Of VariableInteger).CompareTo
         If Me.mIsPlusSign = other.mIsPlusSign Then
-            For i As Integer = Math.Max(Me.mValues.Length, other.mValues.Length) - 1 To 0 Step -1
-                Dim lv = If(i < Me.mValues.Length, Me.mValues(i), 0)
-                Dim rv = If(i < other.mValues.Length, other.mValues(i), 0)
+            For i As Integer = Math.Max(Me.mValue.Length, other.mValue.Length) - 1 To 0 Step -1
+                Dim lv = If(i < Me.mValue.Length, Me.mValue(i), 0)
+                Dim rv = If(i < other.mValue.Length, other.mValue(i), 0)
 
                 If lv > rv Then
                     Return If(Me.mIsPlusSign, 1, -1)
@@ -484,6 +513,12 @@ Public Structure VariableInteger
         Else
             Return If(Me.mIsPlusSign, 1, -1)
         End If
+    End Function
+
+    ''' <summary>インスタンスをコピーします。</summary>
+    ''' <returns>可変長変数。</returns>
+    Public Function Clone() As Object Implements ICloneable.Clone
+        Return New VariableInteger(Me.mIsPlusSign, Me.mValue)
     End Function
 
 #End Region

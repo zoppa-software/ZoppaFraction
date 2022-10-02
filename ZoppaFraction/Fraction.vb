@@ -11,6 +11,34 @@ Public Structure Fraction
     ' 分母
     Private ReadOnly mDenominator As VariableInteger
 
+    ''' <summary>最小値を取得します（遅延）</summary>
+    ''' <returns>最小値。</returns>
+    Private Shared ReadOnly Property MinValueInstance() As New Lazy(Of Fraction)(
+        Function() New Fraction(Long.MinValue + 1, 1)
+    )
+
+    ''' <summary>最小値を取得します。</summary>
+    ''' <returns>最小値。</returns>
+    Public Shared ReadOnly Property MinValue() As Fraction
+        Get
+            Return MinValueInstance.Value
+        End Get
+    End Property
+
+    ''' <summary>最大値を取得します（遅延）</summary>
+    ''' <returns>最大値。</returns>
+    Private Shared ReadOnly Property MaxValueInstance() As New Lazy(Of Fraction)(
+        Function() New Fraction(Long.MaxValue, 1)
+    )
+
+    ''' <summary>最大値を取得します。</summary>
+    ''' <returns>最大値。</returns>
+    Public Shared ReadOnly Property MaxValue() As Fraction
+        Get
+            Return MaxValueInstance.Value
+        End Get
+    End Property
+
     ''' <summary>分子を取得します。</summary>
     ''' <returns>分子。</returns>
     Public ReadOnly Property Numerator As VariableInteger
@@ -77,7 +105,7 @@ Public Structure Fraction
     ''' <param name="num">分子。</param>
     ''' <param name="den">分母。</param>
     ''' <returns>分数。</returns>
-    Public Shared Function Create(num As Integer, Optional den As UInteger = 1) As Fraction
+    Public Shared Function Create(num As Long, Optional den As UInteger = 1) As Fraction
         If den <> 0 Then
             If num <> 0 Then
                 If den <> 1 Then
@@ -466,13 +494,32 @@ Public Structure Fraction
 
 #Region "Cast"
 
-    'Public Shared Widening Operator CType(ByVal self As FractionOld) As Double
-    '    Return self.mNumerator / self.mDenominator
-    'End Operator
+    Public Shared Widening Operator CType(ByVal self As Fraction) As Double
+        Dim num = DirectCast(self.mNumerator.Clone(), VariableInteger)
+        Dim den = DirectCast(self.mDenominator.Clone(), VariableInteger)
+        Do While num.CompareTo(MinValue.mNumerator) < 0 OrElse
+                 num.CompareTo(MaxValue.mNumerator) > 0
+            num.RightShift()
+            den.RightShift()
+        Loop
+        Dim lnum = ConvLong(num.IsPlusSign, num.ByteValues)
+        Dim lden = ConvLong(den.IsPlusSign, den.ByteValues)
+        Return lnum / lden
+    End Operator
 
-    'Public Shared Widening Operator CType(ByVal self As FractionOld) As Integer
+    Private Shared Function ConvLong(plusSign As Boolean, values() As Byte) As Long
+        Dim res As Long = 0
+        For i As Integer = values.Length - 1 To 0 Step -1
+            res = (res << 8) + values(i)
+        Next
+        Return If(plusSign, res, -res)
+    End Function
+
+    'Public Shared Widening Operator CType(ByVal self As FractionOld) As Long
     '    Return CInt(self.mNumerator / self.mDenominator)
     'End Operator
+
+
 
 #End Region
 

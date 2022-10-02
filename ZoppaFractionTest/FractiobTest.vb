@@ -4,32 +4,32 @@ Imports ZoppaFraction
 
 Public Class FractiobTest
 
-    <Fact>
-    Sub ErrorTest()
-        Assert.Throws(Of OverflowException)(
-            Sub()
-                Dim ans = FractionOld.MaxValue + 10
-            End Sub
-        )
+    '<Fact>
+    'Sub ErrorTest()
+    '    Assert.Throws(Of OverflowException)(
+    '        Sub()
+    '            Dim ans = FractionOld.MaxValue + 10
+    '        End Sub
+    '    )
 
-        Assert.Throws(Of OverflowException)(
-            Sub()
-                Dim ans = FractionOld.MaxValue * 10
-            End Sub
-        )
+    '    Assert.Throws(Of OverflowException)(
+    '        Sub()
+    '            Dim ans = FractionOld.MaxValue * 10
+    '        End Sub
+    '    )
 
-        Assert.Throws(Of OverflowException)(
-            Sub()
-                Dim ans = FractionOld.MinValue - 10
-            End Sub
-        )
+    '    Assert.Throws(Of OverflowException)(
+    '        Sub()
+    '            Dim ans = FractionOld.MinValue - 10
+    '        End Sub
+    '    )
 
-        Assert.Throws(Of OverflowException)(
-            Sub()
-                Dim ans = FractionOld.MinValue / 0.1
-            End Sub
-        )
-    End Sub
+    '    Assert.Throws(Of OverflowException)(
+    '        Sub()
+    '            Dim ans = FractionOld.MinValue / 0.1
+    '        End Sub
+    '    )
+    'End Sub
 
     '<Fact>
     'Sub AddTest()
@@ -76,47 +76,63 @@ Public Class FractiobTest
     '    Assert.Equal(CDbl(a2), 2)
     'End Sub
 
+    '<Fact>
+    'Sub EqualsTest()
+    '    Dim a1_1 = FractionOld.Create(2, 6)
+    '    Dim a1_2 = FractionOld.Create(6, 18)
+    '    Assert.Equal(a1_1, a1_2)
+
+    '    Dim a1_3 = FractionOld.Create(2, 7)
+    '    Assert.NotEqual(a1_1, a1_3)
+    'End Sub
+
+    '<Fact>
+    'Sub CompareTest()
+    '    Dim a1_1 = FractionOld.Create(2, 6)
+    '    Dim a1_2 = FractionOld.Create(6, 18)
+    '    Assert.Equal(a1_1.CompareTo(a1_2), 0)
+
+    '    Dim a1_3 = FractionOld.Create(1, 2)
+    '    Assert.Equal(a1_1.CompareTo(a1_3), -1)
+
+    '    Dim a1_4 = FractionOld.Create(1, 4)
+    '    Assert.Equal(a1_1.CompareTo(a1_4), 1)
+    'End Sub
+
+    '<Fact>
+    'Sub ParseTest()
+    '    Dim a1 = FractionOld.Parse("0.33")
+    '    Assert.Equal(a1.Numerator, 33)
+    '    Assert.Equal(a1.Denominator, 100)
+
+    '    Assert.Throws(Of FormatException)(
+    '        Sub()
+    '            Dim a2 = FractionOld.Parse("###")
+    '        End Sub
+    '    )
+
+    '    Dim a3 As FractionOld
+    '    If FractionOld.TryParse("0.5", a3) Then
+    '        Assert.Equal(CDbl(a3), 0.5)
+    '    Else
+    '        Assert.True(False)
+    '    End If
+    'End Sub
+
     <Fact>
-    Sub EqualsTest()
-        Dim a1_1 = FractionOld.Create(2, 6)
-        Dim a1_2 = FractionOld.Create(6, 18)
-        Assert.Equal(a1_1, a1_2)
+    Sub AddAndSubTest()
+        Dim a1 = CFra(5) + CFra(-8)
+        Assert.Equal(CDbl(a1), -3)
 
-        Dim a1_3 = FractionOld.Create(2, 7)
-        Assert.NotEqual(a1_1, a1_3)
-    End Sub
+        Dim a2 = CFra(5) + CFra(-4)
+        Assert.Equal(CDbl(a2), 1)
 
-    <Fact>
-    Sub CompareTest()
-        Dim a1_1 = FractionOld.Create(2, 6)
-        Dim a1_2 = FractionOld.Create(6, 18)
-        Assert.Equal(a1_1.CompareTo(a1_2), 0)
+        Dim a3 = CFra(-1) - CFra(-7)
+        Assert.Equal(CDbl(a3), 6)
 
-        Dim a1_3 = FractionOld.Create(1, 2)
-        Assert.Equal(a1_1.CompareTo(a1_3), -1)
-
-        Dim a1_4 = FractionOld.Create(1, 4)
-        Assert.Equal(a1_1.CompareTo(a1_4), 1)
-    End Sub
-
-    <Fact>
-    Sub ParseTest()
-        Dim a1 = FractionOld.Parse("0.33")
-        Assert.Equal(a1.Numerator, 33)
-        Assert.Equal(a1.Denominator, 100)
-
-        Assert.Throws(Of FormatException)(
-            Sub()
-                Dim a2 = FractionOld.Parse("###")
-            End Sub
-        )
-
-        Dim a3 As FractionOld
-        If FractionOld.TryParse("0.5", a3) Then
-            Assert.Equal(CDbl(a3), 0.5)
-        Else
-            Assert.True(False)
-        End If
+        Dim spe1 = (CFra(Long.MaxValue) + CFra(Long.MaxValue)) / 2
+        Assert.Equal(CDbl(spe1), 9.2233720368547758E+18)
+        Stop
     End Sub
 
 End Class
