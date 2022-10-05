@@ -494,26 +494,26 @@ Public Structure Fraction
 
 #Region "Cast"
 
-    Public Shared Widening Operator CType(ByVal self As Fraction) As Double
-        Dim num = DirectCast(self.mNumerator.Clone(), VariableInteger)
-        Dim den = DirectCast(self.mDenominator.Clone(), VariableInteger)
-        Do While num.CompareTo(MinValue.mNumerator) < 0 OrElse
-                 num.CompareTo(MaxValue.mNumerator) > 0
-            num.RightShift()
-            den.RightShift()
-        Loop
-        Dim lnum = ConvLong(num.IsPlusSign, num.ByteValues)
-        Dim lden = ConvLong(den.IsPlusSign, den.ByteValues)
-        Return lnum / lden
-    End Operator
+    'Public Shared Widening Operator CType(ByVal self As Fraction) As Double
+    '    Dim num = DirectCast(self.mNumerator.Clone(), VariableInteger)
+    '    Dim den = DirectCast(self.mDenominator.Clone(), VariableInteger)
+    '    Do While num.CompareTo(MinValue.mNumerator) < 0 OrElse
+    '             num.CompareTo(MaxValue.mNumerator) > 0
+    '        num.RightShift()
+    '        den.RightShift()
+    '    Loop
+    '    Dim lnum = ConvLong(num.IsPlusSign, num.ByteValues)
+    '    Dim lden = ConvLong(den.IsPlusSign, den.ByteValues)
+    '    Return lnum / lden
+    'End Operator
 
-    Private Shared Function ConvLong(plusSign As Boolean, values() As Byte) As Long
-        Dim res As Long = 0
-        For i As Integer = values.Length - 1 To 0 Step -1
-            res = (res << 8) + values(i)
-        Next
-        Return If(plusSign, res, -res)
-    End Function
+    'Private Shared Function ConvLong(plusSign As Boolean, values() As Byte) As Long
+    '    Dim res As Long = 0
+    '    For i As Integer = values.Length - 1 To 0 Step -1
+    '        res = (res << 8) + values(i)
+    '    Next
+    '    Return If(plusSign, res, -res)
+    'End Function
 
     'Public Shared Widening Operator CType(ByVal self As FractionOld) As Long
     '    Return CInt(self.mNumerator / self.mDenominator)

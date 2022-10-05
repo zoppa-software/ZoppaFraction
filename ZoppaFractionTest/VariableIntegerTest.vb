@@ -4,55 +4,84 @@ Imports ZoppaFraction
 
 Public Class VariableIntegerTest
 
-    '<Fact>
-    'Sub SubtractionTest()
-    '    Dim a1 = New VariableInteger(-100) - New VariableInteger(-110)
-
-    '    Dim a2 = New VariableInteger(-100) - New VariableInteger(-10)
-
-    '    Dim a3 = New VariableInteger(100) - New VariableInteger(110)
-
-    '    Dim a4 = New VariableInteger(100) - New VariableInteger(10)
-    '    Stop
-    'End Sub
-
     <Fact>
-    Sub AnswerTest()
-        Dim e1 = New VariableInteger(100)
-        Dim e2 = New VariableInteger(110)
-        Dim e3 = e1 - e2
-
-        Dim a = New VariableInteger(4565555)
-        Dim s = a.ToString()
-        Dim a2 = a.DivisionAndRemainder(New VariableInteger(10))
-        Dim sz = Marshal.SizeOf(New Fraction())
-
-        Dim b = New VariableInteger(293291)
-        Dim b2 = b.DivisionAndRemainder(New VariableInteger(14918))
-
-        Dim i1 = 600 / (-7)
-        Dim i2 = 600 Mod (-7)
-
-        Dim c = New VariableInteger(600)
-        Dim c2 = c.DivisionAndRemainder(New VariableInteger(-7))
-
-        Dim d = New VariableInteger(123)
-        Dim d2 = d.Multiplication(New VariableInteger(5))
-        Stop
+    Sub AdditionTest()
+        ' +, +
+        Dim a1 = New VariableInteger(50275) + New VariableInteger(98732)
+        Assert.Equal(CLng(a1), 149007)
+        Dim a10 = New VariableInteger(98732) + New VariableInteger(50275)
+        Assert.Equal(CLng(a10), 149007)
+        ' +, -
+        Dim a2 = New VariableInteger(51126) + New VariableInteger(-86073)
+        Assert.Equal(CLng(a2), -34947)
+        Dim a21 = New VariableInteger(86073) + New VariableInteger(-51126)
+        Assert.Equal(CLng(a21), 34947)
+        ' -, +
+        Dim a3 = New VariableInteger(-65952) + New VariableInteger(56528)
+        Assert.Equal(CLng(a3), -9424)
+        Dim a31 = New VariableInteger(-56528) + New VariableInteger(65952)
+        Assert.Equal(CLng(a31), 9424)
+        ' -, -
+        Dim a4 = New VariableInteger(-24681) + New VariableInteger(-84475)
+        Assert.Equal(CLng(a4), -109156)
+        Dim a41 = New VariableInteger(-84475) + New VariableInteger(-24681)
+        Assert.Equal(CLng(a41), -109156)
     End Sub
 
     <Fact>
-    Sub OriginTest()
-        'Dim a = Fraction.Create(999.123)
-        'Stop
+    Sub SubtractionTest()
+        ' +, +
+        Dim a1 = New VariableInteger(88322) - New VariableInteger(68121)
+        Assert.Equal(CLng(a1), 20201)
+        Dim a10 = New VariableInteger(68121) - New VariableInteger(88322)
+        Assert.Equal(CLng(a10), -20201)
+        ' +, -
+        Dim a2 = New VariableInteger(18491) - New VariableInteger(-5352)
+        Assert.Equal(CLng(a2), 23843)
+        Dim a21 = New VariableInteger(5352) - New VariableInteger(-18491)
+        Assert.Equal(CLng(a21), 23843)
+        ' -, +
+        Dim a3 = New VariableInteger(-26712) - New VariableInteger(45505)
+        Assert.Equal(CLng(a3), -72217)
+        Dim a31 = New VariableInteger(-45505) - New VariableInteger(26712)
+        Assert.Equal(CLng(a31), -72217)
+        ' -, -
+        Dim a4 = New VariableInteger(-95571) - New VariableInteger(-60964)
+        Assert.Equal(CLng(a4), -34607)
+        Dim a41 = New VariableInteger(-60964) - New VariableInteger(-95571)
+        Assert.Equal(CLng(a41), 34607)
+    End Sub
 
-        Dim n1 = Fraction.Create(1, 3)
-        Dim n2 = n1 / Fraction.Create(3)
+    <Fact>
+    Sub MultiplicationTest()
+        ' +, +
+        Dim a1 = New VariableInteger(29086) * New VariableInteger(478)
+        Assert.Equal(CLng(a1), 13903108)
+        ' +, -
+        Dim a2 = New VariableInteger(5461) * New VariableInteger(-23404)
+        Assert.Equal(CLng(a2), -127809244)
+        ' -, +
+        Dim a3 = New VariableInteger(-28419) * New VariableInteger(93504)
+        Assert.Equal(CLng(a3), -2657290176)
+        ' -, -
+        Dim a4 = New VariableInteger(-44638) * New VariableInteger(-26024)
+        Assert.Equal(CLng(a4), 1161659312)
+    End Sub
 
-        Dim n3 = n1 + n1 + n1
-
-        Dim n4 = n1 - n1
-        Stop
+    <Fact>
+    Sub DivisionTest()
+        ' +, +
+        Dim a1 = New VariableInteger(52728) / New VariableInteger(13844)
+        Assert.Equal(CLng(a1), 3)
+        ' +, -
+        Dim a2 = New VariableInteger(66678) / New VariableInteger(-3071)
+        Assert.Equal(CLng(a2), -21)
+        ' -, +
+        Dim a3 = New VariableInteger(-58747) / New VariableInteger(8747)
+        Assert.Equal(CLng(a3), -6)
+        ' -, -
+        Dim a4 = New VariableInteger(-52538) / New VariableInteger(-5)
+        Assert.Equal(CLng(a4), 10507)
     End Sub
 
 End Class
