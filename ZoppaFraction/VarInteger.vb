@@ -1,10 +1,14 @@
 ﻿Option Strict On
 Option Explicit On
+
+Imports System.Runtime.Serialization
 Imports System.Text
 
-''' <summary>可変長変数。</summary>
-Public NotInheritable Class VariableInteger
-    Implements IComparable(Of VariableInteger), IEquatable(Of VariableInteger), ICloneable
+''' <summary>可変長整数。</summary>
+<Serializable()>
+Public NotInheritable Class VarInteger
+    Inherits MarshalByRefObject
+    Implements IComparable(Of VarInteger), IEquatable(Of VarInteger), ICloneable, ISerializable
 
     ' 符号
     Private ReadOnly mIsPlusSign As Boolean
@@ -14,7 +18,7 @@ Public NotInheritable Class VariableInteger
 
     ''' <summary>0値を取得します。</summary>
     ''' <returns>0値。</returns>
-    Public Shared ReadOnly Property Zero As VariableInteger = New VariableInteger(0)
+    Public Shared ReadOnly Property Zero As VarInteger = New VarInteger(0)
 
     ''' <summary>ビットサイズを取得します。</summary>
     ''' <returns>最上位のビット桁数。</returns>
@@ -48,40 +52,54 @@ Public NotInheritable Class VariableInteger
         End Get
     End Property
 
+    ''' <summary>生値のバイト配列を取得します。</summary>
+    ''' <returns>生値のバイト。</returns>
+    Public ReadOnly Property Raw As Byte()
+        Get
+            Return Me.mValue.Raw
+        End Get
+    End Property
+
+    ''' <summary>デフォルトコンストラクタ。</summary>
+    Public Sub New()
+        Me.mIsPlusSign = True
+        Me.mValue = New ByteArray(New Byte() {0})
+    End Sub
+
     ''' <summary>コンストラクタ。</summary>
     ''' <param name="value">格納する値。</param>
     Public Sub New(value As Integer)
-        Dim int = value
+        Dim vals = BitConverter.GetBytes(value)
         If value >= 0 Then
             Me.mIsPlusSign = True
+            Me.mValue = New ByteArray(vals)
         Else
+            For i As Integer = 0 To vals.Length - 1
+                vals(i) = CByte(vals(i) Xor &HFF)
+            Next
             Me.mIsPlusSign = False
-            int = -value
+            Dim tmp = New ByteArray(vals)
+            tmp.Addition(New ByteArray(New Byte() {1}))
+            Me.mValue = tmp.TrimCopy()
         End If
-        Dim vals As New List(Of Byte)()
-        Do While int <> 0
-            vals.Add(CByte(int And &HFF))
-            int >>= 8
-        Loop
-        Me.mValue = New ByteArray(vals)
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
     ''' <param name="value">格納する値。</param>
     Public Sub New(value As Long)
-        Dim int = value
+        Dim vals = BitConverter.GetBytes(value)
         If value >= 0 Then
             Me.mIsPlusSign = True
+            Me.mValue = New ByteArray(vals)
         Else
+            For i As Integer = 0 To vals.Length - 1
+                vals(i) = CByte(vals(i) Xor &HFF)
+            Next
             Me.mIsPlusSign = False
-            int = -value
+            Dim tmp = New ByteArray(vals)
+            tmp.Addition(New ByteArray(New Byte() {1}))
+            Me.mValue = tmp.TrimCopy()
         End If
-        Dim vals As New List(Of Byte)()
-        Do While int <> 0
-            vals.Add(CByte(int And &HFF))
-            int >>= 8
-        Loop
-        Me.mValue = New ByteArray(vals)
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
@@ -99,70 +117,124 @@ Public NotInheritable Class VariableInteger
     ''' <summary>コンストラクタ。</summary>
     ''' <param name="isPlusSign">符号。</param>
     ''' <param name="other">コピー元。</param>
-    Private Sub New(isPlusSign As Boolean, other As VariableInteger)
-        Me.mIsPlusSign = isPlusSign
-        Me.mValue = other.mValue.TrimCopy()
-    End Sub
-
-    ''' <summary>コンストラクタ。</summary>
-    ''' <param name="isPlusSign">符号。</param>
-    ''' <param name="other">コピー元。</param>
     Private Sub New(isPlusSign As Boolean, other As ByteArray)
         Me.mIsPlusSign = isPlusSign
         Me.mValue = other.TrimCopy()
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
+    ''' <param name="isPlusSign">符号。</param>
     ''' <param name="other">コピー元。</param>
-    Private Sub New(other As VariableInteger)
+    Friend Sub New(isPlusSign As Boolean, other As Byte())
+        Me.New(isPlusSign, New ByteArray(other))
+    End Sub
+
+    ''' <summary>コンストラクタ。</summary>
+    ''' <param name="other">コピー元。</param>
+    Private Sub New(other As VarInteger)
         Me.mIsPlusSign = other.mIsPlusSign
         Me.mValue = other.mValue.TrimCopy()
     End Sub
 
-    '''' <summary>文字列表現を取得します。</summary>
-    '''' <returns>文字列表現。</returns>
-    'Public Overrides Function ToString() As String
-    '    If Not Me.IsZero Then
-    '        Dim ans As New List(Of Byte)()
-    '        Dim ptr = New VariableInteger(Me)
-    '        Dim den = New VariableInteger(10)
-    '        Do
-    '            Dim pair = ptr.DivisionAndRemainder(den)
-    '            ans.Add(pair.Remainder.mValue(0))
-    '            ptr = pair.Quotient
-    '        Loop While Not ptr.IsZero
+    ''' <summary>コンストラクタ。</summary>
+    ''' <param name="info">インフォメーション。</param>
+    ''' <param name="context">コンテキスト。</param>
+    Protected Sub New(info As SerializationInfo, context As StreamingContext)
+        Me.mIsPlusSign = info.GetBoolean("IsPlusSign")
+        Me.mValue = New ByteArray(CType(info.GetValue("Value", GetType(Byte())), Byte()))
+    End Sub
 
-    '        Dim res As New StringBuilder()
-    '        If Not Me.mIsPlusSign Then
-    '            res.Append("-")
-    '        End If
-    '        ans.Reverse()
-    '        For Each c In ans
-    '            res.Append($"{c}")
-    '        Next
-    '        Return res.ToString()
-    '    Else
-    '        Return "0"
-    '    End If
-    'End Function
+    ''' <summary>可変長整数を取得する。</summary>
+    ''' <param name="value">格納する値。</param>
+    Public Shared Function Create(value As Integer) As VarInteger
+        Return New VarInteger(value)
+    End Function
+
+    ''' <summary>可変長整数を取得する。</summary>
+    ''' <param name="value">格納する値。</param>
+    Public Shared Function Create(value As Long) As VarInteger
+        Return New VarInteger(value)
+    End Function
+
+    ''' <summary>可変長整数を取得する。</summary>
+    ''' <param name="value">格納する値。</param>
+    Public Shared Function Create(value As ULong) As VarInteger
+        Return New VarInteger(value)
+    End Function
+
+    ''' <summary>シリアライズオブジェクトを取得する。</summary>
+    ''' <param name="info">インフォメーション。</param>
+    ''' <param name="context">コンテキスト。</param>
+    Public Sub GetObjectData(info As SerializationInfo, context As StreamingContext) Implements ISerializable.GetObjectData
+        info.AddValue("IsPlusSign", Me.mIsPlusSign)
+        info.AddValue("Value", Me.mValue.Raw)
+    End Sub
+
+    ''' <summary>文字列表現を取得します。</summary>
+    ''' <returns>文字列表現。</returns>
+    Public Overrides Function ToString() As String
+        If Not Me.IsZero Then
+            Dim ans As New List(Of Byte)()
+            Dim ptr = New VarInteger(True, Me.mValue)
+            Dim den = New VarInteger(10)
+            Do
+                Dim pair = ptr.DivisionAndRemainder(den)
+                ans.Add(CByte(CSByte(pair.Remainder)))
+                ptr = pair.Quotient
+            Loop While Not ptr.IsZero
+
+            Dim res As New StringBuilder()
+            If Not Me.mIsPlusSign Then
+                res.Append("-")
+            End If
+            ans.Reverse()
+            For Each c In ans
+                res.Append($"{c}")
+            Next
+            Return res.ToString()
+        Else
+            Return "0"
+        End If
+    End Function
 
     ''' <summary>絶対値を取得します。</summary>
-    ''' <returns>正の可変長変数。</returns>
-    Public Function Abs() As VariableInteger
-        Return New VariableInteger(True, Me)
+    ''' <returns>正の可変長整数。</returns>
+    Public Function Abs() As VarInteger
+        Return New VarInteger(True, Me.mValue)
     End Function
 
     ''' <summary>インスタンスをコピーします。</summary>
-    ''' <returns>可変長変数。</returns>
+    ''' <returns>可変長整数。</returns>
     Public Function Clone() As Object Implements ICloneable.Clone
-        Return New VariableInteger(Me)
+        Return New VarInteger(Me)
     End Function
 
+    ''' <summary>ビットをビット左にシフトする。</summary>
+    ''' <param name="nest"></param>
+    Public Function LeftShift(Optional nest As Integer = 1) As VarInteger
+        Dim cnt = nest \ 8 + 1
+        Dim val = New ByteArray(Me.mValue, Me.mValue.Length + cnt)
+        val.LeftShift(nest)
+        Return New VarInteger(Me.mIsPlusSign, val)
+    End Function
+
+    ''' <summary>ビットを1ビット右にシフトする。</summary>
+    Public Sub RightShift()
+        Me.mValue.RightShift()
+    End Sub
+
     ''' <summary>数値にキャストします。</summary>
-    ''' <param name="self">可変長変数。</param>
+    ''' <param name="self">可変長整数。</param>
     ''' <returns>数値。</returns>
-    Public Shared Narrowing Operator CType(ByVal self As VariableInteger) As Long
-        Return If(self.mIsPlusSign, CLng(self.mValue), -CLng(self.mValue))
+    Public Shared Narrowing Operator CType(ByVal self As VarInteger) As Long
+        Return self.mValue.GetLong(self.mIsPlusSign)
+    End Operator
+
+    ''' <summary>数値にキャストします。</summary>
+    ''' <param name="self">可変長整数。</param>
+    ''' <returns>数値。</returns>
+    Public Shared Narrowing Operator CType(ByVal self As VarInteger) As Integer
+        Return self.mValue.GetInteger(self.mIsPlusSign)
     End Operator
 
 #Region "加算"
@@ -170,14 +242,14 @@ Public NotInheritable Class VariableInteger
     ''' <summary>数値を加算します。</summary>
     ''' <param name="other">加算する値。</param>
     ''' <returns>加算結果。</returns>
-    Public Function Addition(other As VariableInteger) As VariableInteger
+    Public Function Addition(other As VarInteger) As VarInteger
         Dim tmp = New ByteArray(Me.mValue, Math.Max(Me.mValue.Length, other.mValue.Length) + 1)
         If Me.mIsPlusSign Xor other.mIsPlusSign Then
             Dim minus = tmp.Subtraction(other.mValue)
-            Return New VariableInteger(minus Xor Me.mIsPlusSign, tmp)
+            Return New VarInteger(minus Xor Me.mIsPlusSign, tmp)
         Else
             tmp.Addition(other.mValue)
-            Return New VariableInteger(Me.mIsPlusSign, tmp)
+            Return New VarInteger(Me.mIsPlusSign, tmp)
         End If
     End Function
 
@@ -185,7 +257,7 @@ Public NotInheritable Class VariableInteger
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>加算結果。</returns>
-    Public Shared Operator +(lf As VariableInteger, rt As VariableInteger) As VariableInteger
+    Public Shared Operator +(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Addition(rt)
     End Operator
 
@@ -196,21 +268,21 @@ Public NotInheritable Class VariableInteger
     ''' <summary>符号を反転します。</summary>
     ''' <param name="self">反転する数値。</param>
     ''' <returns>反転結果。</returns>
-    Public Shared Operator -(self As VariableInteger) As VariableInteger
-        Return New VariableInteger(Not self.mIsPlusSign, self)
+    Public Shared Operator -(self As VarInteger) As VarInteger
+        Return New VarInteger(Not self.mIsPlusSign, self.mValue)
     End Operator
 
     ''' <summary>数値を引算します。</summary>
     ''' <param name="other">引算する値。</param>
     ''' <returns>引算結果。</returns>
-    Public Function Subtraction(other As VariableInteger) As VariableInteger
+    Public Function Subtraction(other As VarInteger) As VarInteger
         Dim tmp = New ByteArray(Me.mValue, Math.Max(Me.mValue.Length, other.mValue.Length) + 1)
         If Me.mIsPlusSign Xor other.mIsPlusSign Then
             tmp.Addition(other.mValue)
-            Return New VariableInteger(Me.mIsPlusSign, tmp)
+            Return New VarInteger(Me.mIsPlusSign, tmp)
         Else
             Dim minus = tmp.Subtraction(other.mValue)
-            Return New VariableInteger(minus Xor Me.mIsPlusSign, tmp)
+            Return New VarInteger(minus Xor Me.mIsPlusSign, tmp)
         End If
     End Function
 
@@ -218,7 +290,7 @@ Public NotInheritable Class VariableInteger
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>引算結果。</returns>
-    Public Shared Operator -(lf As VariableInteger, rt As VariableInteger) As VariableInteger
+    Public Shared Operator -(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Subtraction(rt)
     End Operator
 
@@ -229,7 +301,7 @@ Public NotInheritable Class VariableInteger
     ''' <summary>数値を乗算します。</summary>
     ''' <param name="multiplier">乗数。</param>
     ''' <returns>乗算結果。</returns>
-    Public Function Multiplication(multiplier As VariableInteger) As VariableInteger
+    Public Function Multiplication(multiplier As VarInteger) As VarInteger
         ' 結果格納領域を生成
         Dim ans = New ByteArray(Me.mValue.Length + multiplier.mValue.Length + 1)
 
@@ -247,14 +319,14 @@ Public NotInheritable Class VariableInteger
             num.LeftShift()
         Next
 
-        Return New VariableInteger(Not (Me.mIsPlusSign Xor multiplier.mIsPlusSign), ans)
+        Return New VarInteger(Not (Me.mIsPlusSign Xor multiplier.mIsPlusSign), ans)
     End Function
 
     ''' <summary>乗算を行います。</summary>
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>乗算結果。</returns>
-    Public Shared Operator *(lf As VariableInteger, rt As VariableInteger) As VariableInteger
+    Public Shared Operator *(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Multiplication(rt)
     End Operator
 
@@ -265,7 +337,7 @@ Public NotInheritable Class VariableInteger
     ''' <summary>数値を除算します。</summary>
     ''' <param name="divisor">除数。</param>
     ''' <returns>除算結果。</returns>
-    Public Function Division(divisor As VariableInteger) As VariableInteger
+    Public Function Division(divisor As VarInteger) As VarInteger
         Dim res = Me.DivisionAndRemainder(divisor)
         Return res.Quotient
     End Function
@@ -273,7 +345,7 @@ Public NotInheritable Class VariableInteger
     ''' <summary>数値を除算し、余りを取得します。</summary>
     ''' <param name="divisor">除数。</param>
     ''' <returns>除算結果。</returns>
-    Public Function Modulo(divisor As VariableInteger) As VariableInteger
+    Public Function Modulo(divisor As VarInteger) As VarInteger
         Dim res = Me.DivisionAndRemainder(divisor)
         Return res.Remainder
     End Function
@@ -281,7 +353,7 @@ Public NotInheritable Class VariableInteger
     ''' <summary>数値を除算します。</summary>
     ''' <param name="divisor">除数。</param>
     ''' <returns>除算結果。</returns>
-    Public Function DivisionAndRemainder(divisor As VariableInteger) As DivisionAnswer
+    Public Function DivisionAndRemainder(divisor As VarInteger) As DivisionAnswer
         Dim lbitsz = Me.mValue.BitSize
         Dim rbitsz = divisor.mValue.BitSize
         If lbitsz >= rbitsz Then
@@ -289,8 +361,9 @@ Public NotInheritable Class VariableInteger
             Dim quotient As New ByteArray(Me.mValue.Length)
 
             ' 被除数、除数の領域を作成
-            Dim num = New ByteArray(Me.mValue, Me.mValue.Length)
-            Dim div = New ByteArray(divisor.mValue, Me.mValue.Length)
+            Dim ln = Math.Max(divisor.mValue.Length, Me.mValue.Length)
+            Dim num = New ByteArray(Me.mValue, ln)
+            Dim div = New ByteArray(divisor.mValue, ln)
             div.LeftShift(lbitsz - rbitsz)
 
             ' 上位の桁から除数を引き算を繰り返す
@@ -302,11 +375,11 @@ Public NotInheritable Class VariableInteger
                 div.RightShift()
             Next
             Return New DivisionAnswer(
-                New VariableInteger(Not (Me.mIsPlusSign Xor divisor.mIsPlusSign), quotient),
-                New VariableInteger(Me.mIsPlusSign, num)
+                New VarInteger(Not (Me.mIsPlusSign Xor divisor.mIsPlusSign), quotient),
+                New VarInteger(Me.mIsPlusSign, num)
             )
         Else
-            Return New DivisionAnswer(VariableInteger.Zero, Me)
+            Return New DivisionAnswer(VarInteger.Zero, Me)
         End If
     End Function
 
@@ -314,7 +387,7 @@ Public NotInheritable Class VariableInteger
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>除算結果。</returns>
-    Public Shared Operator /(lf As VariableInteger, rt As VariableInteger) As VariableInteger
+    Public Shared Operator /(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Division(rt)
     End Operator
 
@@ -322,7 +395,7 @@ Public NotInheritable Class VariableInteger
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>剰余算結果。</returns>
-    Public Shared Operator Mod(lf As VariableInteger, rt As VariableInteger) As VariableInteger
+    Public Shared Operator Mod(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Modulo(rt)
     End Operator
 
@@ -334,8 +407,8 @@ Public NotInheritable Class VariableInteger
     ''' <param name="obj">比較対象。</param>
     ''' <returns>比較結果。</returns>
     Public Overrides Function Equals(obj As Object) As Boolean
-        If TypeOf obj Is FractionOld Then
-            Return Me.Equals(CType(obj, FractionOld))
+        If TypeOf obj Is Fraction Then
+            Return Me.Equals(CType(obj, Fraction))
         Else
             Return False
         End If
@@ -344,7 +417,7 @@ Public NotInheritable Class VariableInteger
     ''' <summary>等しければ真を返します。</summary>
     ''' <param name="other">比較対象。</param>
     ''' <returns>比較結果。</returns>
-    Public Overloads Function Equals(other As VariableInteger) As Boolean Implements IEquatable(Of VariableInteger).Equals
+    Public Overloads Function Equals(other As VarInteger) As Boolean Implements IEquatable(Of VarInteger).Equals
         If Me.mIsPlusSign = other.mIsPlusSign Then
             Return Me.mValue.Equals(other.mValue)
         Else
@@ -356,7 +429,7 @@ Public NotInheritable Class VariableInteger
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>比較結果。</returns>
-    Public Shared Operator =(lf As VariableInteger, rt As VariableInteger) As Boolean
+    Public Shared Operator =(lf As VarInteger, rt As VarInteger) As Boolean
         Return lf.Equals(rt)
     End Operator
 
@@ -364,14 +437,14 @@ Public NotInheritable Class VariableInteger
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>比較結果。</returns>
-    Public Shared Operator <>(lf As VariableInteger, rt As VariableInteger) As Boolean
+    Public Shared Operator <>(lf As VarInteger, rt As VarInteger) As Boolean
         Return Not lf.Equals(rt)
     End Operator
 
     ''' <summary>比較を行います。</summary>
     ''' <param name="other">比較対象。</param>
     ''' <returns>比較結果。</returns>
-    Public Function CompareTo(other As VariableInteger) As Integer Implements IComparable(Of VariableInteger).CompareTo
+    Public Function CompareTo(other As VarInteger) As Integer Implements IComparable(Of VarInteger).CompareTo
         If Me.mIsPlusSign = other.mIsPlusSign Then
             Dim res = Me.mValue.CompareTo(other.mValue)
             Return If(Me.mIsPlusSign, res, -res)
@@ -383,7 +456,7 @@ Public NotInheritable Class VariableInteger
 #End Region
 
     ''' <summary>バイト配列情報。</summary>
-    Private NotInheritable Class ByteArray
+    Friend NotInheritable Class ByteArray
         Implements IComparable(Of ByteArray)
 
         ' バイト値
@@ -422,6 +495,16 @@ Public NotInheritable Class VariableInteger
             End Get
         End Property
 
+        ''' <summary>生値のバイト配列を取得します。</summary>
+        ''' <returns>生値のバイト。</returns>
+        Public ReadOnly Property Raw As Byte()
+            Get
+                Dim res = New Byte(Me.mValue.Length - 1) {}
+                Array.Copy(Me.mValue, res, Me.mValue.Length)
+                Return res
+            End Get
+        End Property
+
         ''' <summary>コンストラクタ。</summary>
         ''' <param name="length">配列の長さ。</param>
         Public Sub New(length As Integer)
@@ -444,10 +527,12 @@ Public NotInheritable Class VariableInteger
 
         ''' <summary>コンストラクタ。</summary>
         ''' <param name="source">元の値リスト。</param>
-        Private Sub New(source As Byte())
+        Public Sub New(source As Byte())
             Me.mValue = If(source.Length > 0, source, New Byte() {0})
         End Sub
 
+        ''' <summary>格納するバイト長を調整してコピーします。</summary>
+        ''' <returns>バイト配列。</returns>
         Public Function TrimCopy() As ByteArray
             Dim vals As New List(Of Byte)()
             For i As Integer = Me.mValue.Length - 1 To 0 Step -1
@@ -516,16 +601,36 @@ Public NotInheritable Class VariableInteger
         End Sub
 
         ''' <summary>ビットを指定数左にシフトする。</summary>
-        ''' <param name="nest">シフトする数。</param>
-        Public Sub LeftShift(Optional nest As Integer = 1)
+        Public Sub LeftShift()
             Dim ovflow As Byte = 0
-            For j As Integer = 0 To nest - 1
+            For i As Integer = 0 To Me.mValue.Length - 1
+                Dim flag = CByte(If(Me.mValue(i) > 127, 1, 0))
+                Me.mValue(i) = Me.mValue(i) << 1 Or ovflow
+                ovflow = flag
+            Next
+        End Sub
+
+        ''' <summary>ビットを指定数左にシフトする。</summary>
+        ''' <param name="nest">シフトする数。</param>
+        Public Sub LeftShift(nest As Integer)
+            Dim skpByte = nest \ 8
+            Dim skpBit = nest And 7
+
+            If skpByte > 0 Then
+                For i As Integer = Me.mValue.Length - skpByte - 1 To 0 Step -1
+                    Me.mValue(i + skpByte) = Me.mValue(i)
+                    Me.mValue(i) = 0
+                Next
+            End If
+
+            If skpBit > 0 Then
+                Dim ovflow As Byte = 0
                 For i As Integer = 0 To Me.mValue.Length - 1
-                    Dim flag = CByte(If(Me.mValue(i) > 127, 1, 0))
-                    Me.mValue(i) = Me.mValue(i) << 1 Or ovflow
+                    Dim flag = Me.mValue(i) >> (8 - skpBit)
+                    Me.mValue(i) = (Me.mValue(i) << skpBit) Or ovflow
                     ovflow = flag
                 Next
-            Next
+            End If
         End Sub
 
         ''' <summary>ビットを1ビット右にシフトする。</summary>
@@ -577,20 +682,40 @@ Public NotInheritable Class VariableInteger
         End Function
 
         ''' <summary>バイト配列の値を数値に変換します。</summary>
-        ''' <param name="self">バイト配列。</param>
+        ''' <param name="sign">符号。</param>
         ''' <returns>数値。</returns>
-        Public Shared Narrowing Operator CType(ByVal self As ByteArray) As Long
-            If self.mValue.Length <= 16 Then
+        Public Function GetLong(sign As Boolean) As Long
+            If Me.mValue.Length <= 8 Then
                 Dim res As ULong = 0
-                For i As Integer = self.mValue.Length - 1 To 0 Step -1
-                    res = res << 8 Or self.mValue(i)
+                For i As Integer = Me.mValue.Length - 1 To 0 Step -1
+                    res = res << 8 Or Me.mValue(i)
                 Next
-                If res <= Long.MaxValue Then
-                    Return CLng(res)
+                If sign Then
+                    If (res And &H8000000000000000UL) = 0 Then Return CLng(res)
+                Else
+                    Return CLng(-res)
                 End If
             End If
             Throw New OverflowException("Longに変換したらオーバーフローします")
-        End Operator
+        End Function
+
+        ''' <summary>バイト配列の値を数値に変換します。</summary>
+        ''' <param name="sign">符号。</param>
+        ''' <returns>数値。</returns>
+        Public Function GetInteger(sign As Boolean) As Integer
+            If Me.mValue.Length <= 4 Then
+                Dim res As UInteger = 0
+                For i As Integer = Me.mValue.Length - 1 To 0 Step -1
+                    res = res << 8 Or Me.mValue(i)
+                Next
+                If sign Then
+                    If (res And &H80000000) = 0 Then Return CInt(res)
+                Else
+                    Return CInt(-res)
+                End If
+            End If
+            Throw New OverflowException("Integerに変換したらオーバーフローします")
+        End Function
 
     End Class
 
@@ -598,15 +723,15 @@ Public NotInheritable Class VariableInteger
     Public Structure DivisionAnswer
 
         ''' <summary>商。</summary>
-        Public ReadOnly Property Quotient As VariableInteger
+        Public ReadOnly Property Quotient As VarInteger
 
         ''' <summary>余。</summary>
-        Public ReadOnly Property Remainder As VariableInteger
+        Public ReadOnly Property Remainder As VarInteger
 
         ''' <summary>コンストラクタ。</summary>
         ''' <param name="quot">商。</param>
         ''' <param name="remd">余。</param>
-        Public Sub New(quot As VariableInteger, remd As VariableInteger)
+        Public Sub New(quot As VarInteger, remd As VarInteger)
             Me.Quotient = quot
             Me.Remainder = remd
         End Sub

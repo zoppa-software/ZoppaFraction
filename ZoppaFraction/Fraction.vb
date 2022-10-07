@@ -1,15 +1,19 @@
 ﻿Option Strict On
 Option Explicit On
 
+Imports System.Runtime.Serialization
+Imports System.Security.Cryptography
+
 ''' <summary>分数。</summary>
-Public Structure Fraction
-    Implements IEquatable(Of Fraction), IComparable, IComparable(Of Fraction)
+<Serializable()>
+Public NotInheritable Class Fraction
+    Implements IEquatable(Of Fraction), IComparable, IComparable(Of Fraction), ISerializable
 
     ' 分子
-    Private ReadOnly mNumerator As VariableInteger
+    Private ReadOnly mNumerator As VarInteger
 
     ' 分母
-    Private ReadOnly mDenominator As VariableInteger
+    Private ReadOnly mDenominator As VarInteger
 
     ''' <summary>最小値を取得します（遅延）</summary>
     ''' <returns>最小値。</returns>
@@ -41,7 +45,7 @@ Public Structure Fraction
 
     ''' <summary>分子を取得します。</summary>
     ''' <returns>分子。</returns>
-    Public ReadOnly Property Numerator As VariableInteger
+    Public ReadOnly Property Numerator As VarInteger
         Get
             Return Me.mNumerator
         End Get
@@ -49,7 +53,7 @@ Public Structure Fraction
 
     ''' <summary>分母を取得します。</summary>
     ''' <returns>分母値。</returns>
-    Public ReadOnly Property Denominator As VariableInteger
+    Public ReadOnly Property Denominator As VarInteger
         Get
             Return Me.mDenominator
         End Get
@@ -59,22 +63,27 @@ Public Structure Fraction
     ''' <returns>0値。</returns>
     Public Shared ReadOnly Property Zero As Fraction
         Get
-            Return New Fraction(VariableInteger.Zero, New VariableInteger(1))
+            Return New Fraction(VarInteger.Zero, New VarInteger(1))
         End Get
     End Property
 
-    ''' <summary>コンストラクタ。</summary>
-    ''' <param name="num">分子。</param>
-    ''' <param name="den">分母。</param>
-    Private Sub New(num As Long, den As ULong)
-        Me.mNumerator = New VariableInteger(num)
-        Me.mDenominator = New VariableInteger(den)
+    Public Sub New()
+        Me.mNumerator = VarInteger.Zero
+        Me.mDenominator = New VarInteger(1)
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
     ''' <param name="num">分子。</param>
     ''' <param name="den">分母。</param>
-    Private Sub New(num As VariableInteger, den As VariableInteger)
+    Private Sub New(num As Long, den As ULong)
+        Me.mNumerator = New VarInteger(num)
+        Me.mDenominator = New VarInteger(den)
+    End Sub
+
+    ''' <summary>コンストラクタ。</summary>
+    ''' <param name="num">分子。</param>
+    ''' <param name="den">分母。</param>
+    Private Sub New(num As VarInteger, den As VarInteger)
         Me.mNumerator = num
         Me.mDenominator = den
     End Sub
@@ -88,18 +97,33 @@ Public Structure Fraction
         Dim nexp = (tmp >> 52) And &H7FF
         Dim nnum = tmp And &HFFFFFFFFFFFFF Or &H10000000000000
 
-        'Dim o = 1 / Math.Pow(2, nexp - 1023 - 52)
-        'Dim o2 = nnum / o
-        ''Dim ans = Math.Pow(2, nexp - 1023 - 52) * nnum
-        ''Console.WriteLine("符号部 : {0:X}", (i >> 31) And 1)
-        ''Console.WriteLine("指数部 : {0:X}", (i >> 23) And &HFF)
-        ''Console.WriteLine("仮数部 : {0:X}", i And &H7FFFFF)
-
-        Dim numerator = New VariableInteger(nnum)
-        Dim denominator = New VariableInteger(CLng(1 / Math.Pow(2, nexp - 1023 - 52)))
+        Dim numerator = New VarInteger(nnum)
+        Dim denominator = New VarInteger(CLng(1 / Math.Pow(2, nexp - 1023 - 52)))
         Dim divisor = Euclidean(numerator, denominator)
         Return New Fraction(If(flag, numerator, -numerator) / divisor, denominator / divisor)
     End Function
+
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="info"></param>
+    ''' <param name="context"></param>
+    Protected Sub New(info As SerializationInfo, context As StreamingContext)
+        Dim sign = info.GetBoolean("Sign")
+        Me.mNumerator = New VarInteger(sign, CType(info.GetValue("mNumerator", GetType(Byte())), Byte()))
+        Me.mDenominator = New VarInteger(True, CType(info.GetValue("mDenominator", GetType(Byte())), Byte()))
+    End Sub
+
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="info"></param>
+    ''' <param name="context"></param>
+    Public Sub GetObjectData(info As SerializationInfo, context As StreamingContext) Implements ISerializable.GetObjectData
+        info.AddValue("Sign", Me.mNumerator.IsPlusSign)
+        info.AddValue("mNumerator", Me.mNumerator.Raw)
+        info.AddValue("mDenominator", Me.mDenominator.Raw)
+    End Sub
 
     ''' <summary>分数を作成します。</summary>
     ''' <param name="num">分子。</param>
@@ -109,8 +133,8 @@ Public Structure Fraction
         If den <> 0 Then
             If num <> 0 Then
                 If den <> 1 Then
-                    Dim numerator = New VariableInteger(num)
-                    Dim denominator = New VariableInteger(den)
+                    Dim numerator = New VarInteger(num)
+                    Dim denominator = New VarInteger(den)
                     Dim divisor = Euclidean(numerator.Abs(), denominator)
                     Return New Fraction(numerator / divisor, denominator / divisor)
                 Else
@@ -128,9 +152,9 @@ Public Structure Fraction
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>最大公約数。</returns>
-    Private Shared Function Euclidean(lf As VariableInteger,
-                                      rt As VariableInteger) As VariableInteger
-        Dim a As VariableInteger, b As VariableInteger
+    Private Shared Function Euclidean(lf As VarInteger,
+                                      rt As VarInteger) As VarInteger
+        Dim a As VarInteger, b As VarInteger
         If lf.CompareTo(rt) < 0 Then
             a = rt
             b = lf
@@ -152,8 +176,8 @@ Public Structure Fraction
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>最小公倍数。</returns>
-    Private Shared Function Multiple(lf As VariableInteger,
-                                     rt As VariableInteger) As VariableInteger
+    Private Shared Function Multiple(lf As VarInteger,
+                                     rt As VarInteger) As VarInteger
         Dim ans = Euclidean(lf, rt)
         If lf.CompareTo(rt) > 0 Then
             Return (lf / ans) * rt
@@ -494,18 +518,30 @@ Public Structure Fraction
 
 #Region "Cast"
 
-    'Public Shared Widening Operator CType(ByVal self As Fraction) As Double
-    '    Dim num = DirectCast(self.mNumerator.Clone(), VariableInteger)
-    '    Dim den = DirectCast(self.mDenominator.Clone(), VariableInteger)
-    '    Do While num.CompareTo(MinValue.mNumerator) < 0 OrElse
-    '             num.CompareTo(MaxValue.mNumerator) > 0
-    '        num.RightShift()
-    '        den.RightShift()
-    '    Loop
-    '    Dim lnum = ConvLong(num.IsPlusSign, num.ByteValues)
-    '    Dim lden = ConvLong(den.IsPlusSign, den.ByteValues)
-    '    Return lnum / lden
-    'End Operator
+    Public Shared Narrowing Operator CType(ByVal self As Fraction) As Double
+        Dim num = self.mNumerator
+        Dim den = self.mDenominator
+        Do While num.CompareTo(MinValue.mNumerator) < 0 OrElse
+                 num.CompareTo(MaxValue.mNumerator) > 0
+            num.RightShift()
+            den.RightShift()
+        Loop
+        If den <> VarInteger.Zero Then
+            Return CLng(num) / CLng(den)
+        Else
+            Throw New OverflowException("浮動小数点で表現できません")
+        End If
+    End Operator
+
+    Public Shared Narrowing Operator CType(ByVal self As Fraction) As Long
+        Dim ans = self.mNumerator / self.mDenominator
+        If ans.CompareTo(MinValue.mNumerator) >= 0 OrElse
+           ans.CompareTo(MaxValue.mNumerator) <= 0 Then
+            Return CLng(ans)
+        Else
+            Throw New OverflowException("64bit整数で表現できない")
+        End If
+    End Operator
 
     'Private Shared Function ConvLong(plusSign As Boolean, values() As Byte) As Long
     '    Dim res As Long = 0
@@ -523,4 +559,4 @@ Public Structure Fraction
 
 #End Region
 
-End Structure
+End Class

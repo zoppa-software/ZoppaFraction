@@ -1,4 +1,6 @@
 Imports System
+Imports System.IO
+Imports System.Runtime.Serialization.Formatters.Binary
 Imports Xunit
 Imports ZoppaFraction
 
@@ -120,7 +122,12 @@ Public Class FractiobTest
     'End Sub
 
     <Fact>
-    Sub AddAndSubTest()
+    Sub NumberTest()
+        Dim a1 = Fraction.Create(1, 10)
+        Dim a2 = a1 + a1 + a1 + a1 + a1
+        Assert.Equal(CDbl(a2), 0.5)
+
+
         'Dim a1 = CFra(5) + CFra(-8)
         'Assert.Equal(CDbl(a1), -3)
 
@@ -133,6 +140,21 @@ Public Class FractiobTest
         'Dim spe1 = (CFra(Long.MaxValue) + CFra(Long.MaxValue)) / 2
         'Assert.Equal(CDbl(spe1), 9.2233720368547758E+18)
         'Stop
+    End Sub
+
+    <Fact>
+    Sub SerializationTest()
+        Dim v = Fraction.Create(1.2345)
+
+        Using mem As New MemoryStream()
+            Dim formatter As New BinaryFormatter()
+            formatter.Serialize(mem, v)
+
+            mem.Position = 0
+            Dim ans = CType(formatter.Deserialize(mem), Fraction)
+
+            Assert.Equal(ans, v)
+        End Using
     End Sub
 
 End Class
