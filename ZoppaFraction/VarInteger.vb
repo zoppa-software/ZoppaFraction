@@ -263,6 +263,38 @@ Public NotInheritable Class VarInteger
         Return lf.Addition(rt)
     End Operator
 
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As VarInteger, rt As Integer) As VarInteger
+        Return lf.Addition(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As VarInteger, rt As Long) As VarInteger
+        Return lf.Addition(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As Integer, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Addition(rt)
+    End Operator
+
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As Long, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Addition(rt)
+    End Operator
+
 #End Region
 
 #Region "引算"
@@ -294,6 +326,38 @@ Public NotInheritable Class VarInteger
     ''' <returns>引算結果。</returns>
     Public Shared Operator -(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Subtraction(rt)
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As VarInteger, rt As Integer) As VarInteger
+        Return lf.Subtraction(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As VarInteger, rt As Long) As VarInteger
+        Return lf.Subtraction(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As Integer, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Subtraction(rt)
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As Long, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Subtraction(rt)
     End Operator
 
 #End Region
@@ -330,6 +394,38 @@ Public NotInheritable Class VarInteger
     ''' <returns>乗算結果。</returns>
     Public Shared Operator *(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Multiplication(rt)
+    End Operator
+
+    ''' <summary>乗算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As VarInteger, rt As Integer) As VarInteger
+        Return lf.Multiplication(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>乗算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As VarInteger, rt As Long) As VarInteger
+        Return lf.Multiplication(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>乗算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As Integer, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Multiplication(rt)
+    End Operator
+
+    ''' <summary>乗算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As Long, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Multiplication(rt)
     End Operator
 
 #End Region
@@ -392,12 +488,76 @@ Public NotInheritable Class VarInteger
         Return lf.Division(rt)
     End Operator
 
+    ''' <summary>除算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As VarInteger, rt As Integer) As VarInteger
+        Return lf.Division(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>除算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As VarInteger, rt As Long) As VarInteger
+        Return lf.Division(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>除算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As Integer, rt As VarInteger) As VarInteger
+        Return New VarInteger(lf).Division(rt)
+    End Operator
+
+    ''' <summary>除算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As Long, rt As VarInteger) As VarInteger
+        Return New VarInteger(lf).Division(rt)
+    End Operator
+
     ''' <summary>剰余算を行います。</summary>
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>剰余算結果。</returns>
     Public Shared Operator Mod(lf As VarInteger, rt As VarInteger) As VarInteger
         Return lf.Modulo(rt)
+    End Operator
+
+    ''' <summary>剰余算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>剰余算結果。</returns>
+    Public Shared Operator Mod(lf As VarInteger, rt As Integer) As VarInteger
+        Return lf.Modulo(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>剰余算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>剰余算結果。</returns>
+    Public Shared Operator Mod(lf As VarInteger, rt As Long) As VarInteger
+        Return lf.Modulo(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>剰余算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>剰余算結果。</returns>
+    Public Shared Operator Mod(lf As Integer, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Modulo(rt)
+    End Operator
+
+    ''' <summary>剰余算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>剰余算結果。</returns>
+    Public Shared Operator Mod(lf As Long, rt As VarInteger) As VarInteger
+        Return VarInteger.Create(lf).Modulo(rt)
     End Operator
 
 #End Region
@@ -434,12 +594,76 @@ Public NotInheritable Class VarInteger
         Return lf.Equals(rt)
     End Operator
 
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As VarInteger, rt As Integer) As Boolean
+        Return lf.Equals(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As VarInteger, rt As Long) As Boolean
+        Return lf.Equals(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Integer, rt As VarInteger) As Boolean
+        Return VarInteger.Create(lf).Equals(rt)
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Long, rt As VarInteger) As Boolean
+        Return VarInteger.Create(lf).Equals(rt)
+    End Operator
+
     ''' <summary>等しくないか比較します。</summary>
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>比較結果。</returns>
     Public Shared Operator <>(lf As VarInteger, rt As VarInteger) As Boolean
         Return Not lf.Equals(rt)
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As VarInteger, rt As Integer) As Boolean
+        Return Not lf.Equals(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As VarInteger, rt As Long) As Boolean
+        Return Not lf.Equals(New VarInteger(rt))
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Integer, rt As VarInteger) As Boolean
+        Return Not VarInteger.Create(lf).Equals(rt)
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Long, rt As VarInteger) As Boolean
+        Return Not VarInteger.Create(lf).Equals(rt)
     End Operator
 
     ''' <summary>比較を行います。</summary>
@@ -461,11 +685,67 @@ Public NotInheritable Class VarInteger
         Return (lf.CompareTo(rt) > 0)
     End Operator
 
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As VarInteger, rt As Integer) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As VarInteger, rt As Long) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Integer, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Long, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) > 0)
+    End Operator
+
     ''' <summary>以上比較を行います。</summary>
     ''' <param name="other">比較対象。</param>
     ''' <returns>比較結果。</returns>
     Public Shared Operator >=(lf As VarInteger, rt As VarInteger) As Boolean
         Return (lf.CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As VarInteger, rt As Integer) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As VarInteger, rt As Long) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Integer, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Long, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) >= 0)
     End Operator
 
     ''' <summary>小なり比較を行います。</summary>
@@ -475,11 +755,67 @@ Public NotInheritable Class VarInteger
         Return (lf.CompareTo(rt) < 0)
     End Operator
 
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As VarInteger, rt As Integer) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As VarInteger, rt As Long) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Integer, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Long, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) < 0)
+    End Operator
+
     ''' <summary>以下比較を行います。</summary>
     ''' <param name="other">比較対象。</param>
     ''' <returns>比較結果。</returns>
     Public Shared Operator <=(lf As VarInteger, rt As VarInteger) As Boolean
         Return (lf.CompareTo(rt) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As VarInteger, rt As Integer) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As VarInteger, rt As Long) As Boolean
+        Return (lf.CompareTo(New VarInteger(rt)) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Integer, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Long, rt As VarInteger) As Boolean
+        Return (VarInteger.Create(lf).CompareTo(rt) <= 0)
     End Operator
 
 #End Region

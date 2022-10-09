@@ -1,6 +1,7 @@
 ﻿Option Strict On
 Option Explicit On
 
+Imports System.Diagnostics.CodeAnalysis
 Imports System.Net
 Imports System.Runtime.Serialization
 Imports System.Security.Cryptography
@@ -327,7 +328,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As Fraction, rt As Long) As Fraction
+        Return lf + Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
     Public Shared Operator +(lf As Fraction, rt As Double) As Fraction
+        Return lf + Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As Fraction, rt As Decimal) As Fraction
         Return lf + Fraction.Create(rt)
     End Operator
 
@@ -343,7 +360,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As Long, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) + rt
+    End Operator
+
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
     Public Shared Operator +(lf As Double, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) + rt
+    End Operator
+
+    ''' <summary>加算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>加算結果。</returns>
+    Public Shared Operator +(lf As Decimal, rt As Fraction) As Fraction
         Return Fraction.Create(lf) + rt
     End Operator
 
@@ -389,7 +422,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As Fraction, rt As Long) As Fraction
+        Return lf - Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
     Public Shared Operator -(lf As Fraction, rt As Double) As Fraction
+        Return lf - Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As Fraction, rt As Decimal) As Fraction
         Return lf - Fraction.Create(rt)
     End Operator
 
@@ -405,7 +454,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As Long, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) - rt
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
     Public Shared Operator -(lf As Double, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) - rt
+    End Operator
+
+    ''' <summary>引算を行います。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>引算結果。</returns>
+    Public Shared Operator -(lf As Decimal, rt As Fraction) As Fraction
         Return Fraction.Create(lf) - rt
     End Operator
 
@@ -443,7 +508,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">被乗数、</param>
     ''' <param name="rt">乗数。</param>
     ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As Fraction, rt As Long) As Fraction
+        Return lf * Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>数値を乗算します。</summary>
+    ''' <param name="lf">被乗数、</param>
+    ''' <param name="rt">乗数。</param>
+    ''' <returns>乗算結果。</returns>
     Public Shared Operator *(lf As Fraction, rt As Double) As Fraction
+        Return lf * Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>数値を乗算します。</summary>
+    ''' <param name="lf">被乗数、</param>
+    ''' <param name="rt">乗数。</param>
+    ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As Fraction, rt As Decimal) As Fraction
         Return lf * Fraction.Create(rt)
     End Operator
 
@@ -459,7 +540,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">被乗数、</param>
     ''' <param name="rt">乗数。</param>
     ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As Long, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) * rt
+    End Operator
+
+    ''' <summary>数値を乗算します。</summary>
+    ''' <param name="lf">被乗数、</param>
+    ''' <param name="rt">乗数。</param>
+    ''' <returns>乗算結果。</returns>
     Public Shared Operator *(lf As Double, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) * rt
+    End Operator
+
+    ''' <summary>数値を乗算します。</summary>
+    ''' <param name="lf">被乗数、</param>
+    ''' <param name="rt">乗数。</param>
+    ''' <returns>乗算結果。</returns>
+    Public Shared Operator *(lf As Decimal, rt As Fraction) As Fraction
         Return Fraction.Create(lf) * rt
     End Operator
 
@@ -501,7 +598,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">被除数、</param>
     ''' <param name="rt">除数。</param>
     ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As Fraction, rt As Long) As Fraction
+        Return lf / Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>数値を除算します。</summary>
+    ''' <param name="lf">被除数、</param>
+    ''' <param name="rt">除数。</param>
+    ''' <returns>除算結果。</returns>
     Public Shared Operator /(lf As Fraction, rt As Double) As Fraction
+        Return lf / Fraction.Create(rt)
+    End Operator
+
+    ''' <summary>数値を除算します。</summary>
+    ''' <param name="lf">被除数、</param>
+    ''' <param name="rt">除数。</param>
+    ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As Fraction, rt As Decimal) As Fraction
         Return lf / Fraction.Create(rt)
     End Operator
 
@@ -517,7 +630,23 @@ Public NotInheritable Class Fraction
     ''' <param name="lf">被除数、</param>
     ''' <param name="rt">除数。</param>
     ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As Long, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) / rt
+    End Operator
+
+    ''' <summary>数値を除算します。</summary>
+    ''' <param name="lf">被除数、</param>
+    ''' <param name="rt">除数。</param>
+    ''' <returns>除算結果。</returns>
     Public Shared Operator /(lf As Double, rt As Fraction) As Fraction
+        Return Fraction.Create(lf) / rt
+    End Operator
+
+    ''' <summary>数値を除算します。</summary>
+    ''' <param name="lf">被除数、</param>
+    ''' <param name="rt">除数。</param>
+    ''' <returns>除算結果。</returns>
+    Public Shared Operator /(lf As Decimal, rt As Fraction) As Fraction
         Return Fraction.Create(lf) / rt
     End Operator
 
@@ -552,12 +681,139 @@ Public NotInheritable Class Fraction
         Return lf.Equals(rt)
     End Operator
 
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Fraction, rt As Integer) As Boolean
+        Return lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Fraction, rt As Long) As Boolean
+        Return lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Fraction, rt As Double) As Boolean
+        Return lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Fraction, rt As Decimal) As Boolean
+        Return lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Integer, rt As Fraction) As Boolean
+        Return Fraction.Create(lf).Equals(rt)
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Long, rt As Fraction) As Boolean
+        Return Fraction.Create(lf).Equals(rt)
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Double, rt As Fraction) As Boolean
+        Return Fraction.Create(lf).Equals(rt)
+    End Operator
+
+    ''' <summary>等しいか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator =(lf As Decimal, rt As Fraction) As Boolean
+        Return Fraction.Create(lf).Equals(rt)
+    End Operator
+
     ''' <summary>等しくないか比較します。</summary>
     ''' <param name="lf">左辺値。</param>
     ''' <param name="rt">右辺値。</param>
     ''' <returns>比較結果。</returns>
     Public Shared Operator <>(lf As Fraction, rt As Fraction) As Boolean
         Return Not lf.Equals(rt)
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Fraction, rt As Integer) As Boolean
+        Return Not lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Fraction, rt As Long) As Boolean
+        Return Not lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Fraction, rt As Double) As Boolean
+        Return Not lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Fraction, rt As Decimal) As Boolean
+        Return Not lf.Equals(Fraction.Create(rt))
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Integer, rt As Fraction) As Boolean
+        Return Not Fraction.Create(lf).Equals(rt)
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Long, rt As Fraction) As Boolean
+        Return Not Fraction.Create(lf).Equals(rt)
+    End Operator
+
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Double, rt As Fraction) As Boolean
+        Return Not Fraction.Create(lf).Equals(rt)
+    End Operator
+    ''' <summary>等しくないか比較します。</summary>
+    ''' <param name="lf">左辺値。</param>
+    ''' <param name="rt">右辺値。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <>(lf As Decimal, rt As Fraction) As Boolean
+        Return Not Fraction.Create(lf).Equals(rt)
     End Operator
 
     ''' <summary>比較を行います。</summary>
@@ -580,6 +836,258 @@ Public NotInheritable Class Fraction
         Dim rt = other.mNumerator * (ans / other.mDenominator)
         Return lf.CompareTo(rt)
     End Function
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Fraction, rt As Fraction) As Boolean
+        Return (lf.CompareTo(rt) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Fraction, rt As Integer) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Fraction, rt As Long) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Fraction, rt As Double) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Fraction, rt As Decimal) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Integer, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Long, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Double, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) > 0)
+    End Operator
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As Decimal, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) > 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Fraction, rt As Fraction) As Boolean
+        Return (lf.CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Fraction, rt As Integer) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Fraction, rt As Long) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Fraction, rt As Double) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Fraction, rt As Decimal) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Integer, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Long, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Double, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As Decimal, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Fraction, rt As Fraction) As Boolean
+        Return (lf.CompareTo(rt) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Fraction, rt As Integer) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Fraction, rt As Long) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Fraction, rt As Double) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Fraction, rt As Decimal) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Integer, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Long, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Double, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) < 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As Decimal, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) < 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Fraction, rt As Fraction) As Boolean
+        Return (lf.CompareTo(rt) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Fraction, rt As Integer) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Fraction, rt As Long) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Fraction, rt As Double) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Fraction, rt As Decimal) As Boolean
+        Return (lf.CompareTo(Fraction.Create(rt)) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Integer, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Long, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Double, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) <= 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As Decimal, rt As Fraction) As Boolean
+        Return (Fraction.Create(lf).CompareTo(rt) <= 0)
+    End Operator
 
 #End Region
 

@@ -3,10 +3,33 @@
   <PropertyGroup>
     <RootNamespace>ZoppaFraction</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
+	<Title>Zoppa Fraction</Title>
+	<RepositoryUrl>https://github.com/zoppa-software/ZoppaFraction</RepositoryUrl>
+	<PackageProjectUrl>https://github.com/zoppa-software/ZoppaFraction</PackageProjectUrl>
+	<Authors>zoppa software</Authors>
+	<Company></Company>
+	<Copyright>Copyright © 2022 zoppa software</Copyright>
+	<VersionPrefix>0.9.0</VersionPrefix>
+	<PackageLicenseFile>License.txt</PackageLicenseFile>
+	<PackageReadmeFile>NugetReadme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="DoubleFraction.vb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\NugetReadme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="License.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
