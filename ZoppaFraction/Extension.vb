@@ -6,37 +6,65 @@ Imports System.Runtime.CompilerServices
 ''' <summary>拡張機能。</summary>
 Public Module Extension
 
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
     <Extension>
     Public Function ChangeFraction(value As Integer) As Fraction
         Return Fraction.Create(value)
     End Function
 
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
+    <Extension>
+    Public Function ChangeFraction(value As Long) As Fraction
+        Return Fraction.Create(value)
+    End Function
+
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
     <Extension>
     Public Function ChangeFraction(value As Double) As Fraction
         Return Fraction.Create(value)
     End Function
 
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
+    <Extension>
+    Public Function ChangeFraction(value As Decimal) As Fraction
+        Return Fraction.Create(value)
+    End Function
+
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
     Public Function CFra(value As Integer) As Fraction
         Return Fraction.Create(value)
     End Function
 
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
     Public Function CFra(value As Long) As Fraction
         Return Fraction.Create(value)
     End Function
 
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
     Public Function CFra(value As Double) As Fraction
         Return Fraction.Create(value)
     End Function
 
-
-
-
-
-
-
-
-
-
+    ''' <summary>分数に変換します。</summary>
+    ''' <param name="value">変換する値。</param>
+    ''' <returns>分数。</returns>
+    Public Function CFra(value As Decimal) As Fraction
+        Return Fraction.Create(value)
+    End Function
 
     ''' <summary>可変長整数に変換します。</summary>
     ''' <param name="value">変換する値。</param>

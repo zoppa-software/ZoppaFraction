@@ -54,7 +54,7 @@ Public NotInheritable Class VarInteger
 
     ''' <summary>生値のバイト配列を取得します。</summary>
     ''' <returns>生値のバイト。</returns>
-    Public ReadOnly Property Raw As Byte()
+    Friend ReadOnly Property Raw As Byte()
         Get
             Return Me.mValue.Raw
         End Get
@@ -70,36 +70,38 @@ Public NotInheritable Class VarInteger
     ''' <param name="value">格納する値。</param>
     Public Sub New(value As Integer)
         Dim vals = BitConverter.GetBytes(value)
+        Dim tmp As ByteArray
         If value >= 0 Then
             Me.mIsPlusSign = True
-            Me.mValue = New ByteArray(vals)
+            tmp = New ByteArray(vals)
         Else
             For i As Integer = 0 To vals.Length - 1
                 vals(i) = CByte(vals(i) Xor &HFF)
             Next
             Me.mIsPlusSign = False
-            Dim tmp = New ByteArray(vals)
+            tmp = New ByteArray(vals)
             tmp.Addition(New ByteArray(New Byte() {1}))
-            Me.mValue = tmp.TrimCopy()
         End If
+        Me.mValue = tmp.TrimCopy()
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
     ''' <param name="value">格納する値。</param>
     Public Sub New(value As Long)
+        Dim tmp As ByteArray
         Dim vals = BitConverter.GetBytes(value)
         If value >= 0 Then
             Me.mIsPlusSign = True
-            Me.mValue = New ByteArray(vals)
+            tmp = New ByteArray(vals)
         Else
             For i As Integer = 0 To vals.Length - 1
                 vals(i) = CByte(vals(i) Xor &HFF)
             Next
             Me.mIsPlusSign = False
-            Dim tmp = New ByteArray(vals)
+            tmp = New ByteArray(vals)
             tmp.Addition(New ByteArray(New Byte() {1}))
-            Me.mValue = tmp.TrimCopy()
         End If
+        Me.mValue = tmp.TrimCopy()
     End Sub
 
     ''' <summary>コンストラクタ。</summary>
@@ -361,9 +363,8 @@ Public NotInheritable Class VarInteger
             Dim quotient As New ByteArray(Me.mValue.Length)
 
             ' 被除数、除数の領域を作成
-            Dim ln = Math.Max(divisor.mValue.Length, Me.mValue.Length)
-            Dim num = New ByteArray(Me.mValue, ln)
-            Dim div = New ByteArray(divisor.mValue, ln)
+            Dim num = New ByteArray(Me.mValue, Me.mValue.Length)
+            Dim div = New ByteArray(divisor.mValue, Me.mValue.Length)
             div.LeftShift(lbitsz - rbitsz)
 
             ' 上位の桁から除数を引き算を繰り返す
@@ -452,6 +453,34 @@ Public NotInheritable Class VarInteger
             Return If(Me.mIsPlusSign, 1, -1)
         End If
     End Function
+
+    ''' <summary>大なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >(lf As VarInteger, rt As VarInteger) As Boolean
+        Return (lf.CompareTo(rt) > 0)
+    End Operator
+
+    ''' <summary>以上比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator >=(lf As VarInteger, rt As VarInteger) As Boolean
+        Return (lf.CompareTo(rt) >= 0)
+    End Operator
+
+    ''' <summary>小なり比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <(lf As VarInteger, rt As VarInteger) As Boolean
+        Return (lf.CompareTo(rt) < 0)
+    End Operator
+
+    ''' <summary>以下比較を行います。</summary>
+    ''' <param name="other">比較対象。</param>
+    ''' <returns>比較結果。</returns>
+    Public Shared Operator <=(lf As VarInteger, rt As VarInteger) As Boolean
+        Return (lf.CompareTo(rt) <= 0)
+    End Operator
 
 #End Region
 

@@ -1,13 +1,18 @@
 ﻿Option Strict On
 Option Explicit On
 
+Imports System.Net
 Imports System.Runtime.Serialization
 Imports System.Security.Cryptography
+Imports System.Text
 
 ''' <summary>分数。</summary>
 <Serializable()>
 Public NotInheritable Class Fraction
     Implements IEquatable(Of Fraction), IComparable, IComparable(Of Fraction), ISerializable
+
+    ''' <summary>小数点以下の有効桁数。</summary>
+    Public Const DECIMAL_PLACE As Integer = 25
 
     ' 分子
     Private ReadOnly mNumerator As VarInteger
@@ -88,48 +93,95 @@ Public NotInheritable Class Fraction
         Me.mDenominator = den
     End Sub
 
+    ''' <summary>コンストラクタ。</summary>
+    ''' <param name="info">インフォメーション。</param>
+    ''' <param name="context">コンテキスト。</param>
+    Protected Sub New(info As SerializationInfo, context As StreamingContext)
+        Dim sign = info.GetBoolean("Sign")
+        Me.mNumerator = New VarInteger(sign, CType(info.GetValue("Numerator", GetType(Byte())), Byte()))
+        Me.mDenominator = New VarInteger(True, CType(info.GetValue("Denominator", GetType(Byte())), Byte()))
+    End Sub
+
+    ''' <summary>シリアライズオブジェクトを取得する。</summary>
+    ''' <param name="info">インフォメーション。</param>
+    ''' <param name="context">コンテキスト。</param>
+    Public Sub GetObjectData(info As SerializationInfo, context As StreamingContext) Implements ISerializable.GetObjectData
+        info.AddValue("Sign", Me.mNumerator.IsPlusSign)
+        info.AddValue("Numerator", Me.mNumerator.Raw)
+        info.AddValue("Denominator", Me.mDenominator.Raw)
+    End Sub
+
     ''' <summary>分数を作成します。</summary>
     ''' <param name="num">小数値。</param>
     ''' <returns>分数。</returns>
     Public Shared Function Create(num As Double) As Fraction
         Dim tmp = BitConverter.ToInt64(BitConverter.GetBytes(num), 0)
+
+        ' ビット表現を取得
         Dim flag = (tmp And &H8000000000000000) = 0
         Dim nexp = (tmp >> 52) And &H7FF
         Dim nnum = tmp And &HFFFFFFFFFFFFF Or &H10000000000000
 
+        ' 分子、分母に変換
         Dim numerator = New VarInteger(nnum)
         Dim denominator = New VarInteger(CLng(1 / Math.Pow(2, nexp - 1023 - 52)))
         Dim divisor = Euclidean(numerator, denominator)
         Return New Fraction(If(flag, numerator, -numerator) / divisor, denominator / divisor)
     End Function
 
-    ''' <summary>
-    ''' 
-    ''' </summary>
-    ''' <param name="info"></param>
-    ''' <param name="context"></param>
-    Protected Sub New(info As SerializationInfo, context As StreamingContext)
-        Dim sign = info.GetBoolean("Sign")
-        Me.mNumerator = New VarInteger(sign, CType(info.GetValue("mNumerator", GetType(Byte())), Byte()))
-        Me.mDenominator = New VarInteger(True, CType(info.GetValue("mDenominator", GetType(Byte())), Byte()))
-    End Sub
+    Public Shared Function Create(num As Decimal) As Fraction
+        Dim bit = Decimal.GetBits(num)
 
-    ''' <summary>
-    ''' 
-    ''' </summary>
-    ''' <param name="info"></param>
-    ''' <param name="context"></param>
-    Public Sub GetObjectData(info As SerializationInfo, context As StreamingContext) Implements ISerializable.GetObjectData
-        info.AddValue("Sign", Me.mNumerator.IsPlusSign)
-        info.AddValue("mNumerator", Me.mNumerator.Raw)
-        info.AddValue("mDenominator", Me.mDenominator.Raw)
-    End Sub
+        ' ビット表現を取得
+        Dim info = bit(3) >> 16
+        Dim sign = info >> 15
+        Dim exponent = info And &HFF
+
+        ' 分子を取得
+        Dim bit2 = BitConverter.ToUInt32(BitConverter.GetBytes(bit(2)), 0)
+        Dim bit1 = BitConverter.ToUInt32(BitConverter.GetBytes(bit(1)), 0)
+        Dim bit0 = BitConverter.ToUInt32(BitConverter.GetBytes(bit(0)), 0)
+        Dim numerator = VarInteger.Create(bit2).LeftShift(64) + VarInteger.Create(bit1).LeftShift(32) + VarInteger.Create(bit0)
+
+        ' 分母を取得
+        Dim denominator = New VarInteger(1)
+        Dim dec As New VarInteger(10)
+        For i As Integer = 0 To exponent - 1
+            denominator = denominator.Multiplication(dec)
+        Next
+
+        Dim divisor = Euclidean(numerator, denominator)
+        Return New Fraction(If(sign = 0, numerator, -numerator) / divisor, denominator / divisor)
+    End Function
 
     ''' <summary>分数を作成します。</summary>
     ''' <param name="num">分子。</param>
     ''' <param name="den">分母。</param>
     ''' <returns>分数。</returns>
-    Public Shared Function Create(num As Long, Optional den As UInteger = 1) As Fraction
+    Public Shared Function Create(num As Integer, Optional den As UInteger = 1) As Fraction
+        If den <> 0 Then
+            If num <> 0 Then
+                If den <> 1 Then
+                    Dim numerator = New VarInteger(num)
+                    Dim denominator = New VarInteger(den)
+                    Dim divisor = Euclidean(numerator.Abs(), denominator)
+                    Return New Fraction(numerator / divisor, denominator / divisor)
+                Else
+                    Return New Fraction(num, 1)
+                End If
+            Else
+                Return Zero
+            End If
+        Else
+            Throw New DivideByZeroException("分母が0です")
+        End If
+    End Function
+
+    ''' <summary>分数を作成します。</summary>
+    ''' <param name="num">分子。</param>
+    ''' <param name="den">分母。</param>
+    ''' <returns>分数。</returns>
+    Public Shared Function Create(num As Long, Optional den As ULong = 1) As Fraction
         If den <> 0 Then
             If num <> 0 Then
                 If den <> 1 Then
@@ -186,11 +238,61 @@ Public NotInheritable Class Fraction
         End If
     End Function
 
-    '''' <summary>文字列表現を取得します。</summary>
-    '''' <returns>文字列。</returns>
-    'Public Overrides Function ToString() As String
-    '    Return $"{CDbl(Me)}"
-    'End Function
+    ''' <summary>文字列表現を取得します。</summary>
+    ''' <returns>文字列。</returns>
+    Public Overrides Function ToString() As String
+        Return Me.ToString(DECIMAL_PLACE)
+    End Function
+
+    ''' <summary>文字列表現を取得します。</summary>
+    ''' <returns>文字列。</returns>
+    Public Overloads Function ToString(number As Integer) As String
+        Dim divans = Me.mNumerator.DivisionAndRemainder(Me.mDenominator)
+        Dim hiAns = divans.Quotient.Abs()
+        Dim lowAns = VarInteger.Zero
+
+        If Not divans.Remainder.IsZero Then
+            Dim num = divans.Remainder.Abs()
+            Dim maxNum = New VarInteger(1)
+            Dim dec = New VarInteger(10)
+            For i As Integer = 0 To number - 1
+                num = num.Multiplication(dec)
+                maxNum = maxNum.Multiplication(dec)
+                lowAns = lowAns.Multiplication(dec)
+
+                Dim figre = num.DivisionAndRemainder(Me.mDenominator)
+                lowAns = lowAns.Addition(figre.Quotient)
+                If figre.Remainder.IsZero Then
+                    Exit For
+                Else
+                    num = figre.Remainder
+                    If i = number - 1 Then
+                        num = num.Multiplication(dec)
+                        figre = num.DivisionAndRemainder(Me.mDenominator)
+                        If figre.Quotient.CompareTo(VarInteger.Create(5)) >= 0 Then
+                            lowAns = lowAns.Addition(VarInteger.Create(1))
+
+                            If lowAns.CompareTo(maxNum) >= 0 Then
+                                hiAns = hiAns.Addition(VarInteger.Create(1))
+                                lowAns = VarInteger.Zero
+                            End If
+                        End If
+                    End If
+                End If
+            Next
+        End If
+
+        Dim res As New StringBuilder()
+        If divans.Remainder.IsMinusSign Then
+            res.Append("-")
+        End If
+        res.Append(hiAns.ToString())
+        If Not lowAns.IsZero Then
+            res.Append(".")
+            res.Append(lowAns.ToString())
+        End If
+        Return res.ToString()
+    End Function
 
 #Region "加算"
 
@@ -483,41 +585,79 @@ Public NotInheritable Class Fraction
 
 #Region "文字列の変換"
 
-    '''' <summary>文字列から分数へ変換します。</summary>
-    '''' <param name="input">変換する文字列。</param>
-    '''' <returns>分数。</returns>
-    'Public Shared Function Parse(input As String) As FractionOld
-    '    Dim iv As Integer, dv As Double
-    '    If Integer.TryParse(input, iv) Then
-    '        Return FractionOld.Create(iv)
-    '    ElseIf Double.TryParse(input, dv) Then
-    '        Return FractionOld.Create(dv)
-    '    Else
-    '        Throw New FormatException("文字列の変換に失敗しました")
-    '    End If
-    'End Function
+    ''' <summary>文字列から分数へ変換します。</summary>
+    ''' <param name="input">変換する文字列。</param>
+    ''' <returns>分数。</returns>
+    Public Shared Function Parse(input As String) As Fraction
+        Dim res As Fraction = Nothing
+        If Fraction.TryParse(input, res) Then
+            Return res
+        Else
+            Throw New FormatException("入力文字列の形式が正しくありません")
+        End If
+    End Function
 
-    '''' <summary>文字列から分数へ変数します。</summary>
-    '''' <param name="input">変換する文字列。</param>
-    '''' <param name="outValue">変換した分数。</param>
-    '''' <returns>変換できたら真。</returns>
-    'Public Shared Function TryParse(input As String, ByRef outValue As FractionOld) As Boolean
-    '    Dim iv As Integer, dv As Double
-    '    If Integer.TryParse(input, iv) Then
-    '        outValue = FractionOld.Create(iv)
-    '        Return True
-    '    ElseIf Double.TryParse(input, dv) Then
-    '        outValue = FractionOld.Create(dv)
-    '        Return True
-    '    Else
-    '        Return False
-    '    End If
-    'End Function
+    ''' <summary>文字列から分数へ変数します。</summary>
+    ''' <param name="input">変換する文字列。</param>
+    ''' <param name="outValue">変換した分数。</param>
+    ''' <returns>変換できたら真。</returns>
+    Public Shared Function TryParse(input As String, ByRef outValue As Fraction) As Boolean
+        input = If(input?.Trim(), "")
+
+        If input <> "" Then
+            Dim hiNum = VarInteger.Zero
+            Dim lowNum = VarInteger.Create(1)
+            Dim dec As New VarInteger(10)
+            Dim point = False
+
+            Dim strIndex As Integer = 0
+            Dim sign As Boolean = True
+            If input.StartsWith("+") Then
+                sign = True
+                strIndex = 1
+            ElseIf input.StartsWith("-") Then
+                sign = False
+                strIndex = 1
+            Else
+                sign = True
+                strIndex = 0
+            End If
+
+            For i As Integer = strIndex To input.Length - 1
+                If point Then
+                    lowNum = lowNum.Multiplication(dec)
+                End If
+
+                Select Case input(i)
+                    Case "0"c To "9"c
+                        hiNum = hiNum.Multiplication(dec) + New VarInteger(AscW(input(i)) - AscW("0"))
+
+                    Case "."c
+                        If Not point Then
+                            point = True
+                        Else
+                            Return False
+                        End If
+
+                    Case Else
+                        Return False
+                End Select
+            Next
+
+            outValue = New Fraction(New VarInteger(sign, hiNum.Raw), lowNum)
+            Return True
+        Else
+            Return False
+        End If
+    End Function
 
 #End Region
 
 #Region "Cast"
 
+    ''' <summary>Double型にキャストします。</summary>
+    ''' <param name="self">分数。</param>
+    ''' <returns>キャスト後の値。</returns>
     Public Shared Narrowing Operator CType(ByVal self As Fraction) As Double
         Dim num = self.mNumerator
         Dim den = self.mDenominator
@@ -529,10 +669,13 @@ Public NotInheritable Class Fraction
         If den <> VarInteger.Zero Then
             Return CLng(num) / CLng(den)
         Else
-            Throw New OverflowException("浮動小数点で表現できません")
+            Throw New OverflowException("浮動小数点へ変換出来ませんでした")
         End If
     End Operator
 
+    ''' <summary>Long型にキャストします。</summary>
+    ''' <param name="self">分数。</param>
+    ''' <returns>キャスト後の値。</returns>
     Public Shared Narrowing Operator CType(ByVal self As Fraction) As Long
         Dim ans = self.mNumerator / self.mDenominator
         If ans.CompareTo(MinValue.mNumerator) >= 0 OrElse
@@ -543,19 +686,17 @@ Public NotInheritable Class Fraction
         End If
     End Operator
 
-    'Private Shared Function ConvLong(plusSign As Boolean, values() As Byte) As Long
-    '    Dim res As Long = 0
-    '    For i As Integer = values.Length - 1 To 0 Step -1
-    '        res = (res << 8) + values(i)
-    '    Next
-    '    Return If(plusSign, res, -res)
-    'End Function
-
-    'Public Shared Widening Operator CType(ByVal self As FractionOld) As Long
-    '    Return CInt(self.mNumerator / self.mDenominator)
-    'End Operator
-
-
+    ''' <summary>Decimal型にキャストします。</summary>
+    ''' <param name="self">分数。</param>
+    ''' <returns>キャスト後の値。</returns>
+    Public Shared Narrowing Operator CType(ByVal self As Fraction) As Decimal
+        Dim res As Decimal
+        If Decimal.TryParse(self.ToString(), res) Then
+            Return res
+        Else
+            Throw New OverflowException("Decimalで表現できません")
+        End If
+    End Operator
 
 #End Region
 

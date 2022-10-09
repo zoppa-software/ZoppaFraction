@@ -87,6 +87,26 @@ Public Class VarIntegerTest
     End Sub
 
     <Fact>
+    Sub CompareTest()
+        Assert.True(CVarInt(3) > CVarInt(2))
+        Assert.False(CVarInt(2) > CVarInt(2))
+        Assert.False(CVarInt(1) > CVarInt(2))
+        Assert.True(CVarInt(1) > CVarInt(-1))
+        Assert.False(CVarInt(-1) > CVarInt(1))
+        Assert.True(CVarInt(-2) > CVarInt(-3))
+
+        Assert.True(CVarInt(91718) < CVarInt(292379))
+        Assert.False(CVarInt(91718) < CVarInt(77235))
+        Assert.False(CVarInt(77235) < CVarInt(77235))
+        Assert.False(CVarInt(91718) < CVarInt(-45689))
+        Assert.True(CVarInt(-91718) < CVarInt(45689))
+        Assert.True(CVarInt(-56728) < CVarInt(-45689))
+
+        Assert.True(CVarInt(-68801) >= CVarInt(-68801))
+        Assert.True(CVarInt(-56728) <= CVarInt(-56728))
+    End Sub
+
+    <Fact>
     Sub SerializationTest()
         Dim v As New VarInteger(30822)
 
