@@ -39,8 +39,11 @@ Public Class FractionTest
         Dim ans = CFra(1.0) / 3.0 * 3.0
         Assert.Equal(ans, 1)
 
-        Dim n = Fraction.Parse("0.1")
+        ' •‚“®¬”“_‚Å‚ÍˆÈ‰º‚ÌŒ‹‰Ê‚Í 1‚É‚È‚è‚Ü‚¹‚ñ
         Dim a = 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1
+
+        ' ‚±‚¿‚ç‚Í 1‚É‚È‚è‚Ü‚·
+        Dim n = Fraction.Parse("0.1")
         Assert.Equal(CDbl(n + n + n + n + n + n + n + n + n + n), 1)
 
 
