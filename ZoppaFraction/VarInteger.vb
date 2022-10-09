@@ -484,6 +484,63 @@ Public NotInheritable Class VarInteger
 
 #End Region
 
+#Region "文字列の変換"
+
+    ''' <summary>文字列から分数へ変換します。</summary>
+    ''' <param name="input">変換する文字列。</param>
+    ''' <returns>分数。</returns>
+    Public Shared Function Parse(input As String) As VarInteger
+        Dim res As VarInteger = Nothing
+        If VarInteger.TryParse(input, res) Then
+            Return res
+        Else
+            Throw New FormatException("入力文字列の形式が正しくありません")
+        End If
+    End Function
+
+    ''' <summary>文字列から分数へ変数します。</summary>
+    ''' <param name="input">変換する文字列。</param>
+    ''' <param name="outValue">変換した分数。</param>
+    ''' <returns>変換できたら真。</returns>
+    Public Shared Function TryParse(input As String, ByRef outValue As VarInteger) As Boolean
+        input = If(input?.Trim(), "")
+
+        If input <> "" Then
+            Dim number = VarInteger.Zero
+            Dim dec As New VarInteger(10)
+
+            Dim strIndex As Integer = 0
+            Dim sign As Boolean = True
+            If input.StartsWith("+") Then
+                sign = True
+                strIndex = 1
+            ElseIf input.StartsWith("-") Then
+                sign = False
+                strIndex = 1
+            Else
+                sign = True
+                strIndex = 0
+            End If
+
+            For i As Integer = strIndex To input.Length - 1
+                Select Case input(i)
+                    Case "0"c To "9"c
+                        number = number.Multiplication(dec) + New VarInteger(AscW(input(i)) - AscW("0"))
+
+                    Case Else
+                        Return False
+                End Select
+            Next
+
+            outValue = New VarInteger(sign, number.Raw)
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+#End Region
+
     ''' <summary>バイト配列情報。</summary>
     Friend NotInheritable Class ByteArray
         Implements IComparable(Of ByteArray)
