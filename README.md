@@ -47,7 +47,7 @@ Assert.Equal(-1, (double)(n + n + n + n + n + n + n + n + n + n));
   
 ## インストール
 ソースをビルドして `ZoppaFraction.dll` ファイルを生成して参照してください。  
-Nugetにライブラリを公開しています。[ZoppaFraction](https://github.com/zoppa-software/ZoppaFraction)を参照してください。
+Nugetにライブラリを公開しています。[ZoppaFraction](https://www.nuget.org/packages/ZoppaFraction/)を参照してください。
 
 ## 作成情報
 * 造田　崇（zoppa software）
