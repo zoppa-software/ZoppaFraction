@@ -42,9 +42,54 @@ Assert.Equal(-1, (double)(n + n + n + n + n + n + n + n + n + n));
 
 ## 使い方
 ### **分数**
-### **可変長変数**
-
   
+``` vb
+' 
+``` 
+インスタンス生成は以下の方法があります。  
+||方法|  
+|----------|---------|  
+| Integerから生成する。 |`Create`メソッドを使用する。</br>Fraction.Create(`Integer`)</br>Fraction.Create(`Integer(分子)`, `UInteger(分母)`)|
+| 〃|`ChangeFraction`拡張メソッドを使用する。`Integer`.ChangeFraction()|
+| 〃|キャストを使用する。CType(`Integer`, Fraction)|
+| 〃|`CFra`メソッドを使用する。CFra(`Integer`)|
+| Longから生成する。 |`Create`メソッドを使用する。</br>Fraction.Create(`Long`)</br>Fraction.Create(`Long(分子)`, `ULong(分母)`)|
+| 〃|`ChangeFraction`拡張メソッドを使用する。`Long`.ChangeFraction()|
+| 〃|キャストを使用する。CType(`Long`, Fraction)|
+| 〃|`CFra`メソッドを使用する。CFra(`Long`)|
+| Doubleから生成する。 |`Create`メソッドを使用する。Fraction.Create(`Double`)|
+| 〃|`ChangeFraction`拡張メソッドを使用する。`Double`.ChangeFraction()|
+| 〃|キャストを使用する。CType(`Double`, Fraction)|
+| 〃|`CFra`メソッドを使用する。CFra(`Double`)|
+| Decimalから生成する。 |`Create`メソッドを使用する。Fraction.Create(`Decimal`)|
+| 〃|`ChangeFraction`拡張メソッドを使用する。`Decimal`.ChangeFraction()|
+| 〃|キャストを使用する。CType(`Decimal`, Fraction)|
+| 〃|`CFra`メソッドを使用する。CFra(`Decimal`)|
+| 文字列から生成する。 |`Parse`メソッドを使用します。Fraction.Parse(`文字列`)、Fraction.TryParse(`文字列`)| 
+
+### **多倍長整数**  
+分数の分子、分母は **多倍長整数** を使用して実装しています。  
+多倍長変数も四則演算をサポートしています。  
+``` vb
+' 以下のようにLong(64bit)で表現できない40桁の整数の四則演算をサポートします
+Dim longValue = VarInteger.Parse("1234567890123456789012345678901234567890") + 5
+Assert.Equal(longValue.ToString(), "1234567890123456789012345678901234567895")
+``` 
+インスタンス生成は以下の方法があります。  
+||方法|  
+|----------|---------|  
+| Integerから生成する。 |コンストラクタを使用する。New VarInteger(`Integer`)|  
+| 〃|`Create`メソッドを使用する。VarInteger.Create(`Integer`)|
+| 〃|`ChangeVarInteger`拡張メソッドを使用する。`Integer`.ChangeVarInteger()|
+| 〃|キャストを使用する。CType(`Integer`, VarInteger)|
+| 〃|`CVarInt`メソッドを使用する。CVarInt(`Integer`)|
+| Longから生成する。 |コンストラクタを使用する。New VarInteger(`Long`)|  
+| 〃|`Create`メソッドを使用する。VarInteger.Create(`Long`)|
+| 〃|`ChangeVarInteger`拡張メソッドを使用する。`Long`.ChangeVarInteger()|
+| 〃|キャストを使用する。CType(`Long`, VarInteger)|
+| 〃|`CVarInt`メソッドを使用する。CVarInt(`Long`)|
+| 文字列から生成する。 |`Parse`メソッドを使用します。VarInteger.Parse(`文字列`)、VarInteger.TryParse(`文字列`)| 
+
 ## インストール
 ソースをビルドして `ZoppaFraction.dll` ファイルを生成して参照してください。  
 Nugetにライブラリを公開しています。[ZoppaFraction](https://www.nuget.org/packages/ZoppaFraction/)を参照してください。

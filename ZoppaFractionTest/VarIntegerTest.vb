@@ -143,6 +143,9 @@ Public Class VarIntegerTest
 
         Dim v4 = Long.MaxValue.ChangeVarInteger()
         Assert.Equal(CLng(v4), Long.MaxValue)
+
+        Dim longValue = VarInteger.Parse("1234567890123456789012345678901234567890") + 5
+        Assert.Equal(longValue.ToString(), "1234567890123456789012345678901234567895")
     End Sub
 
 End Class
