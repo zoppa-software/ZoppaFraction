@@ -1206,6 +1206,27 @@ Public NotInheritable Class Fraction
         End If
     End Operator
 
+    ''' <summary>Double型からキャストします。</summary>
+    ''' <param name="self">数値。</param>
+    ''' <returns>分数値。</returns>
+    Public Shared Narrowing Operator CType(ByVal value As Double) As Fraction
+        Return Fraction.Create(value)
+    End Operator
+
+    ''' <summary>Double型からキャストします。</summary>
+    ''' <param name="self">数値。</param>
+    ''' <returns>分数値。</returns>
+    Public Shared Narrowing Operator CType(ByVal value As Long) As Fraction
+        Return Fraction.Create(value)
+    End Operator
+
+    ''' <summary>Double型からキャストします。</summary>
+    ''' <param name="self">数値。</param>
+    ''' <returns>分数値。</returns>
+    Public Shared Narrowing Operator CType(ByVal value As Decimal) As Fraction
+        Return Fraction.Create(value)
+    End Operator
+
 #End Region
 
 End Class

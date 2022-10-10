@@ -239,6 +239,20 @@ Public NotInheritable Class VarInteger
         Return self.mValue.GetInteger(self.mIsPlusSign)
     End Operator
 
+    ''' <summary>Long型からキャストします。</summary>
+    ''' <param name="value">数値。</param>
+    ''' <returns>可変長整数。</returns>
+    Public Shared Narrowing Operator CType(ByVal value As Long) As VarInteger
+        Return New VarInteger(value)
+    End Operator
+
+    ''' <summary>Integer型からキャストします。</summary>
+    ''' <param name="value">数値。</param>
+    ''' <returns>可変長整数。</returns>
+    Public Shared Narrowing Operator CType(ByVal value As Integer) As VarInteger
+        Return New VarInteger(value)
+    End Operator
+
 #Region "加算"
 
     ''' <summary>数値を加算します。</summary>
